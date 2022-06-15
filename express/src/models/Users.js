@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-    const users = sequelize.define(
-        'users',
+    const Users = sequelize.define(
+        'Users',
         {
             uid: {
                 type: DataTypes.INTEGER,
@@ -31,18 +31,30 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: true,
             charset: 'utf8',
             freezeTableName: true,
-        },
+        }
     );
 
-    users.associate = (models) => {
-        users.hasMany(models.follows, {
+    Users.associate = (models) => {
+        Users.hasMany(models.Follows, {
             foreignKey: 'followee',
             sourceKey: 'uid',
         });
-        users.hasMany(models.follows, {
+        Users.hasMany(models.Follows, {
             foreignKey: 'follower',
             sourceKey: 'uid',
         });
+        Users.hasMany(models.Articles, {
+            foreignKey: 'author_id',
+            sourceKey: 'uid',
+        });
+        Users.hasMany(models.Favorites, {
+            foreignKey: 'user_id',
+            sourceKey: 'uid',
+        });
+        Users.hasMany(models.Comments, {
+            foreignKey: 'author_id',
+            sourceKey: 'uid',
+        });
     };
-    return users;
+    return Users;
 };

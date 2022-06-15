@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-    const follows = sequelize.define(
-        'follows',
+    const Follows = sequelize.define(
+        'Follows',
         {
             uid: {
                 type: DataTypes.INTEGER,
@@ -26,5 +26,5 @@ module.exports = (sequelize, DataTypes) => {
         },
     );
 
-    return follows;
+    return Follows;
 };
