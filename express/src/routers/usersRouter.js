@@ -6,7 +6,7 @@ const usersController = require('../controllers/usersController');
 const validateSignUp = [
     body('user.username').notEmpty().withMessage('user name be required.'),
     body('user.email').notEmpty().withMessage('user email be required.'),
-    body('user.password').notEmpty.withMessage('user password be required.'),
+    body('user.password').notEmpty().withMessage('user password be required.'),
     validate,
 ];
 
@@ -19,7 +19,7 @@ const validateLogin = [
 const router = express.Router();
 
 // check current user
-router.get('/');
+router.get('/', usersController.checkCurrentUser);
 
 // signup
 router.post('/', validateSignUp, usersController.signUp);
