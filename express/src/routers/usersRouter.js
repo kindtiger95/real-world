@@ -4,7 +4,15 @@ const { body } = require('express-validator');
 const usersController = require('../controllers/usersController');
 
 const validateSignUp = [
-    body('user').notEmpty().withMessage('user field be required.'),
+    body('user.username').notEmpty().withMessage('user name be required.'),
+    body('user.email').notEmpty().withMessage('user email be required.'),
+    body('user.password').notEmpty.withMessage('user password be required.'),
+    validate,
+];
+
+const validateLogin = [
+    body('user.email').notEmpty().withMessage('user email be required.'),
+    body('user.password').notEmpty().withMessage('user password be required.'),
     validate,
 ];
 
@@ -20,6 +28,6 @@ router.post('/', validateSignUp, usersController.signUp);
 router.put('/');
 
 // login
-router.post('/login');
+router.post('/login', validateLogin, usersController.login);
 
 module.exports = router;
