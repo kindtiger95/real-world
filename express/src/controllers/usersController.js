@@ -14,33 +14,19 @@ function createJwtToken(user_uid) {
 }
 
 module.exports.checkCurrentUser = async (req, res) => {
-    const authHeader = req.get('Authorization');
-    if (!(authHeader || authHeader.startsWith('Token '))) {
-        return res.status(401).json({
-            errors: {
-                body: AUTH_ERROR,
-            },
+    const user = await models.Users.findByPk(req.user_uid);
+    if (!user)
+        return res.status(400).json({
+            message: 'uid is not exists.',
         });
-    }
-
-    const token = authHeader.split(' ')[1];
-    jwt.verify(token, config.jwt.secretKey, async (error, decoded) => {
-        if (error) {
-            return res.status(401).json(AUTH_ERROR);
-        }
-        const user = await models.Users.findOne({
-            where: decoded.user_uid,
-        });
-        if (!user) return res.status(401).json(AUTH_ERROR);
-        return res.status(200).json({
-            user: {
-                email: user.dataValues.email,
-                token,
-                username: user.dataValues.username,
-                bio: user.dataValues.bio,
-                image: user.dataValues.image,
-            },
-        });
+    return res.status(200).json({
+        user: {
+            email: user.dataValues.email,
+            token: req.token,
+            username: user.dataValues.username,
+            bio: user.dataValues.bio,
+            image: user.dataValues.image,
+        },
     });
 };
 
@@ -63,11 +49,7 @@ module.exports.updateUserInfo = async (req, res) => {
             message: 'uid is not exists.',
         });
 
-    const select_ret = await models.Users.findOne({
-        where: {
-            uid: req.user_uid,
-        },
-    });
+    const select_ret = await models.Users.findByPk(req.user_uid);
     return res.status(200).json({
         user: {
             email: select_ret.dataValues.email,

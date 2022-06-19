@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require('express');
 const { validate } = require('../middlewares/validator');
 const { body } = require('express-validator');
@@ -18,14 +20,8 @@ const validateLogin = [
 
 const router = express.Router();
 
-// check current user
-router.get('/', usersController.checkCurrentUser);
-
 // signup
 router.post('/', validateSignUp, usersController.signUp);
-
-// update user info
-router.put('/');
 
 // login
 router.post('/login', validateLogin, usersController.login);
