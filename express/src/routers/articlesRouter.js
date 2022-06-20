@@ -2,10 +2,12 @@
 
 const express = require('express');
 const router = express.Router();
+const auth = require('../middlewares/auth');
+const articlesController = require('../controllers/articlesController');
 
 router.get('/');
 
-router.post('/');
+router.post('/', auth.requireAuth, articlesController.createArticle);
 
 router.get('/feed');
 
