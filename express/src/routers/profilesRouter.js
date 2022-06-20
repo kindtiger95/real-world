@@ -7,12 +7,12 @@ const profilesController = require('../controllers/profilesController');
 const router = express.Router();
 
 // get profile except user private information
-router.get('/profiles/:username', profilesController.getProfileByUserUid);
+router.get('/:username', auth.optionalAuth, profilesController.getProfileByUserUid);
 
 // following the user from current user
-router.post('/profiles/:username/follow');
+router.post('/:username/follow', auth.requireAuth, profilesController.following);
 
 // unfollowing the user from current user
-router.delete('/profiles/:username/follow');
+router.delete('/:username/follow', auth.requireAuth, profilesController.unfollowing);
 
 module.exports = router;

@@ -99,10 +99,10 @@ module.exports.login = async (req, res) => {
             email,
         },
     });
-    if (!user) return res.status(401).json({ message: 'Invalid user or password.' });
+    if (!user) return res.status(401).json({ message: AUTH_ERROR });
 
     const is_valid_pw = await bcrypt.compare(password, user.dataValues.password);
-    if (!is_valid_pw) return res.status(401).json({ message: 'Invalid user or password.' });
+    if (!is_valid_pw) return res.status(401).json({ message: AUTH_ERROR });
 
     const token = createJwtToken(user.dataValues.uid);
     res.status(200).json({
