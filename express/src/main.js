@@ -7,11 +7,13 @@ const usersRouter = require('./routers/usersRouter');
 const articlesRouter = require('./routers/articlesRouter');
 const profilesRouter = require('./routers/profilesRouter');
 const tagsRouter = require('./routers/tagsRouter');
+const etcRouter = require('./routers/etcRouter');
 
 const app = express();
 
 app.use(express.json());
 
+app.use('/api', etcRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/articles', articlesRouter);
 app.use('/api/profiles', profilesRouter);
