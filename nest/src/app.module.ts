@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiModule } from './api/api.module';
+import { typeOrmModuleOptions } from './loader';
 
 @Module({
-    imports: [ApiModule],
+    imports: [ApiModule, TypeOrmModule.forRootAsync(typeOrmModuleOptions)],
     controllers: [],
     providers: [],
 })
