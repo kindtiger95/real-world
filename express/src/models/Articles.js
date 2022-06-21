@@ -70,5 +70,27 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
+    Articles.findBySlug = async (slug, association) => {
+        return await Articles.findOne({
+            include: [association],
+            where: {
+                slug,
+            },
+        });
+    };
+
+    Articles.updatedBySlug = async (slug, update_obj) => {
+        return await Articles.update(
+            {
+                ...update_obj,
+            },
+            {
+                where: {
+                    slug,
+                },
+            },
+        );
+    };
+
     return Articles;
 };

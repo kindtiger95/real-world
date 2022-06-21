@@ -9,15 +9,15 @@ router.get('/', auth.optionalAuth, articlesController.getArticles);
 
 router.post('/', auth.requireAuth, articlesController.createArticle);
 
-router.get('/feed');
+router.get('/feed', auth.requireAuth, articlesController.feedArticle);
 
-router.get('/:slug');
+router.get('/:slug', auth.optionalAuth, articlesController.getArticleBySlug);
 
-router.put('/:slug');
+router.put('/:slug', auth.requireAuth, articlesController.updateArticleBySlug);
 
-router.delete('/:slug');
+router.delete('/:slug', auth.requireAuth, articlesController.deleteArticleBySlug);
 
-router.post('/:slug/comments');
+router.post('/:slug/comments', auth.requireAuth, articlesController.addComments);
 
 router.get('/:slug/comments');
 

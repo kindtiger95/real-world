@@ -37,6 +37,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Follows.findFollowing = async (followee, follower) => {
         return await Follows.findOne({
+            include: [],
             where: {
                 followee,
                 follower,

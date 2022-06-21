@@ -62,11 +62,11 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     Users.findByUsername = async (username) => {
-        return await Users.findOne({
+        return (await Users.findOne({
             where: {
                 username,
             },
-        }).dataValues;
+        })).dataValues;
     };
 
     return Users;

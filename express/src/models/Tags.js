@@ -25,10 +25,24 @@ module.exports = (sequelize, DataTypes) => {
             freezeTableName: true,
         },
     );
+
     Tags.associate = (models) => {
         Tags.belongsTo(models.Articles, {
             foreignKey: 'article_id',
         });
     };
+
+    Tags.findAllByArticleId = async (article_id) => {
+        let tag_list = await Tags.findAll({
+            where: {
+                article_id,
+            },
+        });
+        tag_list = tag_list.map((tag) => {
+            return tag.dataValues.tag;
+        });
+        return tag_list;
+    };
+    
     return Tags;
 };
