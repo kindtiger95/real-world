@@ -337,7 +337,20 @@ module.exports.addComments = async (req, res) => {
 module.exports.getComments = async (req, res) => {
     const slug = req.params.slug;
     const user_uid = req.user_uid;
-    const comments = await models.Comments.findAllByArticle(models.Articles, slug);
-    console.log(comments);
+    const comments = await models.Comments.findAllByArticle(models.Articles, models.Users, slug);
+    const response = {
+        comments: [],
+    };
+
+    for (const comment of comments) {
+        const user = await models.Users.findByPk(comment.)
+        const response_elem = {
+            id: comment.dataValues.uid,
+            createdAt: comment.dataValues.createdAt,
+            updatedAt: comment.dataValues.updatedAt,
+            body: comment.dataValues.body,
+        };
+    }
+
     return res.status(200).send();
 };

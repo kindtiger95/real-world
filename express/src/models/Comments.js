@@ -37,11 +37,11 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'article_id',
         });
     };
-    Comments.findAllByArticle = async (association, slug) => {
-        return await Articles.findAll({
+    Comments.findAllByArticle = async (article, slug) => {
+        return await Comments.findAll({
             include: [
                 {
-                    model: association,
+                    model: article,
                     required: true,
                 },
             ],
