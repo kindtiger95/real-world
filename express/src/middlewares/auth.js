@@ -44,7 +44,6 @@ module.exports.requireAuth = async (req, res, next) => {
                 body: AUTH_ERROR,
             },
         });
-
     await verifyToken(token, req, res, next);
 };
 
@@ -52,8 +51,5 @@ module.exports.optionalAuth = async (req, res, next) => {
     const token = getTokenString(req);
     if (!token) {
         next();
-        return;
-    }
-
-    await verifyToken(token, req, res, next);
+    } else await verifyToken(token, req, res, next);
 };

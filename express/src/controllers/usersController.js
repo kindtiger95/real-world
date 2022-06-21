@@ -63,11 +63,7 @@ module.exports.updateUserInfo = async (req, res) => {
 
 module.exports.signUp = async (req, res) => {
     const { email, password, username } = req.body.user;
-    const find_ret = await models.Users.findOne({
-        where: {
-            username,
-        },
-    });
+    const find_ret = await models.Users.findByUsername(username);
 
     if (find_ret) {
         res.status(407).json({

@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: true,
             charset: 'utf8',
             freezeTableName: true,
-        }
+        },
     );
 
     Users.associate = (models) => {
@@ -60,5 +60,14 @@ module.exports = (sequelize, DataTypes) => {
             sourceKey: 'uid',
         });
     };
+
+    Users.findByUsername = async (username) => {
+        return await Users.findOne({
+            where: {
+                username,
+            },
+        }).dataValues;
+    };
+
     return Users;
 };

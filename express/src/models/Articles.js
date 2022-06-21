@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: true,
             charset: 'utf8',
             freezeTableName: true,
-        }
+        },
     );
     Articles.associate = (models) => {
         Articles.hasMany(models.Favorites, {
@@ -50,6 +50,25 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'article_id',
             sourceKey: 'uid',
         });
+        Articles.belongsTo(models.Users, {
+            foreignKey: 'author_id',
+        });
     };
+
+    Articles.findAllArticles = async (association, limit, offset, author) => {
+        return await Articles.findAll({
+            limit,
+            offset,
+            include: [
+                {
+                    model: association,
+                    required: true,
+                },
+            ],
+            order: [['createdAt', 'DESC']],
+            where: author ? { '$User.username$': author } : '',
+        });
+    };
+
     return Articles;
 };

@@ -27,7 +27,15 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: true,
             charset: 'utf8',
             freezeTableName: true,
-        }
+        },
     );
+    Comments.associate = (models) => {
+        Comments.belongsTo(models.Users, {
+            foreignKey: 'author_id',
+        });
+        Comments.belongsTo(models.Articles, {
+            foreignKey: 'article_id',
+        });
+    };
     return Comments;
 };

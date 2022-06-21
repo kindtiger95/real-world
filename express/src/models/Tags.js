@@ -23,8 +23,12 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: true,
             charset: 'utf8',
             freezeTableName: true,
-        }
+        },
     );
-
+    Tags.associate = (models) => {
+        Tags.belongsTo(models.Articles, {
+            foreignKey: 'article_id',
+        });
+    };
     return Tags;
 };

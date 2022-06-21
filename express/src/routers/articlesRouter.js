@@ -5,7 +5,7 @@ const router = express.Router();
 const auth = require('../middlewares/auth');
 const articlesController = require('../controllers/articlesController');
 
-router.get('/');
+router.get('/', auth.optionalAuth, articlesController.getArticles);
 
 router.post('/', auth.requireAuth, articlesController.createArticle);
 

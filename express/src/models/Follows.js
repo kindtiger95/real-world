@@ -26,5 +26,23 @@ module.exports = (sequelize, DataTypes) => {
         },
     );
 
+    Follows.associate = (models) => {
+        Follows.belongsTo(models.Users, {
+            foreignKey: 'followee',
+        });
+        Follows.belongsTo(models.Users, {
+            foreignKey: 'follower',
+        });
+    };
+
+    Follows.findFollowing = async (followee, follower) => {
+        return await Follows.findOne({
+            where: {
+                followee,
+                follower,
+            },
+        }).dataValues;
+    };
+    
     return Follows;
 };

@@ -37,11 +37,8 @@ module.exports.getProfileByUserUid = async (req, res) => {
 
 module.exports.following = async (req, res) => {
     const username = req.params.username;
-    const find_followee = await models.Users.findOne({
-        where: {
-            username,
-        },
-    });
+    const find_followee = await models.Users.findByUsername(username);
+    
     if (!find_followee.dataValues.uid)
         return res.status(400).json({
             errors: {
@@ -67,11 +64,7 @@ module.exports.following = async (req, res) => {
 
 module.exports.unfollowing = async (req, res) => {
     const username = req.params.username;
-    const find_followee = await models.Users.findOne({
-        where: {
-            username,
-        },
-    });
+    const find_followee = await models.Users.findByUsername(username);
 
     if (!find_followee.dataValues.uid)
         return res.status(400).json({
