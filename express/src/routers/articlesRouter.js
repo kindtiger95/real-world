@@ -21,10 +21,10 @@ router.post('/:slug/comments', auth.requireAuth, articlesController.addComments)
 
 router.get('/:slug/comments', auth.optionalAuth, articlesController.getComments);
 
-router.delete('/:slug/comments/:id');
+router.delete('/:slug/comments/:id', auth.requireAuth, articlesController.deleteComment);
 
-router.post('/:slug/favorite');
+router.post('/:slug/favorite', auth.requireAuth, articlesController.favorite);
 
-router.delete('/:slug/favorite');
+router.delete('/:slug/favorite', auth.requireAuth, articlesController.unFavorite);
 
 module.exports = router;

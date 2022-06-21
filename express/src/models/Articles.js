@@ -72,7 +72,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Articles.findBySlug = async (slug, association) => {
         return await Articles.findOne({
-            include: [association],
+            include: association ? [association] : '',
             where: {
                 slug,
             },

@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: true,
             charset: 'utf8',
             freezeTableName: true,
-        },
+        }
     );
 
     Follows.associate = (models) => {
@@ -36,6 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     Follows.findFollowing = async (followee, follower) => {
+        if (!followee || !follower) return null;
         return await Follows.findOne({
             include: [],
             where: {
@@ -44,6 +45,6 @@ module.exports = (sequelize, DataTypes) => {
             },
         }).dataValues;
     };
-    
+
     return Follows;
 };

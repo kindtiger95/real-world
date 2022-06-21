@@ -22,6 +22,32 @@ async function getFavoriteInfo(article_id, user_id) {
     };
 }
 
+async function createResponseArticle(article, user_uid) {
+    const favorite_info = await getFavoriteInfo(article.dataValues.uid, user_uid);
+    const tag_list = await models.Tags.findAllByArticleId(article.dataValues.uid);
+    const is_following = await models.Follows.findFollowing(user_uid, article.User.dataValues.uid);
+
+    return {
+        article: {
+            slug: article.dataValues.slug,
+            title: article.dataValues.title,
+            description: article.dataValues.description,
+            body: article.dataValues.body,
+            tagList: tag_list,
+            createdAt: article.dataValues.createdAt,
+            updatedAt: article.dataValues.updatedAt,
+            favorited: favorite_info.is_favorited,
+            favoritesCount: favorite_info.count,
+            author: {
+                username: article.User.dataValues.username,
+                bio: article.User.dataValues.bio,
+                image: article.User.dataValues.image,
+                following: is_following ? true : false,
+            },
+        },
+    };
+}
+
 module.exports.getArticles = async (req, res) => {
     const limit = req.query.limit ? req.query.limit : 20;
     const author = req.query.author;
@@ -156,28 +182,7 @@ module.exports.feedArticle = async (req, res) => {
     };
 
     for (const article of feed_articles) {
-        const tag_list = await models.Tags.findAllByArticleId(article.uid);
-
-        const favorite_info = await getFavoriteInfo(article.uid, user_uid);
-        const is_following = await models.Follows.findFollowing(user_uid, article.dataValues.User.uid);
-
-        const response_elem = {
-            slug: article.dataValues.slug,
-            title: article.dataValues.title,
-            description: article.dataValues.description,
-            body: article.dataValues.body,
-            tagList: tag_list,
-            createdAt: article.dataValues.createdAt,
-            updatedAt: article.dataValues.updatedAt,
-            favorited: favorite_info.is_favorited,
-            favoritesCount: favorite_info.count,
-            author: {
-                username: article.dataValues.User.username,
-                bio: article.dataValues.User.bio,
-                image: article.dataValues.User.image,
-                following: is_following ? true : false,
-            },
-        };
+        const response_elem = await createResponseArticle(article, user_uid);
         response.articles.push(response_elem);
     }
     response.articlesCount = response.articles.length;
@@ -190,31 +195,10 @@ module.exports.feedArticle = async (req, res) => {
 module.exports.getArticleBySlug = async (req, res) => {
     const slug = req.params.slug;
     const user_uid = req.user_uid;
-
     const article = await models.Articles.findBySlug(slug);
-    const tag_list = await models.Tags.findAllByArticleId(article.dataValues.uid);
-
-    const favorite_info = await getFavoriteInfo(article.dataValues.uid, user_uid);
-    const is_following = await models.Follows.findFollowing(user_uid, article.dataValues.User.uid);
-
+    const response = await createResponseArticle(article, user_uid);
     return res.status(200).json({
-        article: {
-            slug: article.dataValues.slug,
-            title: article.dataValues.title,
-            description: article.dataValues.description,
-            body: article.dataValues.body,
-            tagList: tag_list,
-            createdAt: article.dataValues.createdAt,
-            updatedAt: article.dataValues.updatedAt,
-            favorited: favorite_info.is_favorited,
-            favoritesCount: favorite_info.count,
-            author: {
-                username: article.dataValues.User.username,
-                bio: article.dataValues.User.bio,
-                image: article.dataValues.User.image,
-                following: is_following ? true : false,
-            },
-        },
+        ...response,
     });
 };
 
@@ -223,7 +207,6 @@ module.exports.updateArticleBySlug = async (req, res) => {
     const user_uid = req.user_uid;
 
     const article = await models.Articles.findBySlug(slug, models.Users);
-    const tag_list = await models.Tags.findAllByArticleId(article.dataValues.uid);
 
     if (article.dataValues.author_id !== user_uid) {
         return res.status(401).json({
@@ -234,27 +217,11 @@ module.exports.updateArticleBySlug = async (req, res) => {
     }
 
     await models.Articles.updatedBySlug(slug, req.body.article);
-    const favorite_info = await getFavoriteInfo(article.dataValues.uid, user_uid);
-    const is_following = await models.Follows.findFollowing(user_uid, article.dataValues.User.uid);
     const result_article = await models.Articles.findBySlug(slug, models.Users);
+
+    const response = await createResponseArticle(result_article, user_uid);
     return res.status(200).json({
-        article: {
-            slug: result_article.dataValues.slug,
-            title: result_article.dataValues.title,
-            description: result_article.dataValues.description,
-            body: result_article.dataValues.body,
-            tagList: tag_list,
-            createdAt: result_article.dataValues.createdAt,
-            updatedAt: result_article.dataValues.updatedAt,
-            favorited: favorite_info.is_favorited,
-            favoritesCount: favorite_info.count,
-            author: {
-                username: result_article.dataValues.User.username,
-                bio: result_article.dataValues.User.bio,
-                image: result_article.dataValues.User.image,
-                following: is_following ? true : false,
-            },
-        },
+        ...response,
     });
 };
 
@@ -337,20 +304,94 @@ module.exports.addComments = async (req, res) => {
 module.exports.getComments = async (req, res) => {
     const slug = req.params.slug;
     const user_uid = req.user_uid;
-    const comments = await models.Comments.findAllByArticle(models.Articles, models.Users, slug);
+    const comments = await models.Comments.findAllByArticle(models.Articles, slug);
     const response = {
         comments: [],
     };
 
     for (const comment of comments) {
-        const user = await models.Users.findByPk(comment.)
+        const author = await models.Users.findByPk(comment.Article.dataValues.author_id);
+        let following = false;
+        if (user_uid) following = (await models.Follows.findFollowing(author.uid, user_uid)) ? true : false;
+
         const response_elem = {
             id: comment.dataValues.uid,
             createdAt: comment.dataValues.createdAt,
             updatedAt: comment.dataValues.updatedAt,
             body: comment.dataValues.body,
+            author: {
+                username: author.dataValues.username,
+                bio: author.dataValues.bio,
+                image: author.dataValues.image,
+                following,
+            },
         };
+        response.comments.push(response_elem);
     }
 
+    return res.status(200).json({
+        ...response,
+    });
+};
+
+module.exports.deleteComment = async (req, res) => {
+    const id = req.params.id;
+    const user_uid = req.user_uid;
+    const comment = await models.Comments.findByPk(id);
+    if (comment.dataValues.author_id !== user_uid)
+        return res.status(401).json({
+            errors: {
+                body: '401 error.',
+            },
+        });
+    await models.Comments.destroy({
+        where: {
+            uid: comment.dataValues.uid,
+        },
+    });
     return res.status(200).send();
+};
+
+module.exports.favorite = async (req, res) => {
+    const slug = req.params.slug;
+    const user_uid = req.user_uid;
+    const article = await models.Articles.findBySlug(slug, models.Users);
+    if (!article)
+        return res.status(400).json({
+            errors: {
+                body: '400 error.',
+            },
+        });
+    await models.Favorites.create({
+        article_id: article.dataValues.uid,
+        user_id: user_uid,
+    });
+
+    const response = await createResponseArticle(article, user_uid);
+    return res.status(200).json({
+        ...response,
+    });
+};
+
+module.exports.unFavorite = async (req, res) => {
+    const slug = req.params.slug;
+    const user_uid = req.user_uid;
+    const article = await models.Articles.findBySlug(slug, models.Users);
+    if (!article)
+        return res.status(400).json({
+            errors: {
+                body: '400 error.',
+            },
+        });
+    await models.Favorites.destroy({
+        where: {
+            article_id: article.dataValues.uid,
+            user_id: user_uid,
+        },
+    });
+
+    const response = await createResponseArticle(article, user_uid);
+    return res.status(200).json({
+        ...response,
+    });
 };

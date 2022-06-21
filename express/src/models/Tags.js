@@ -43,6 +43,14 @@ module.exports = (sequelize, DataTypes) => {
         });
         return tag_list;
     };
-    
+
+    Tags.findAllSanitization = async () => {
+        let tag_list = await Tags.findAll();
+        tag_list = tag_list.map((tag) => {
+            return tag.dataValues.tag;
+        });
+        return tag_list;
+    };
+
     return Tags;
 };
