@@ -55,14 +55,11 @@ module.exports.getArticles = async (req, res) => {
     };
 
     for (const article of article_list) {
-        let isExistTags = false;
-
         let tag_list = await models.Tags.findAllByArticleId(article.uid);
-        tag_list = tag_list.map((tag_elem) => {
-            if (tag && tag_elem.dataValues.tag === tag) isExistTags = true;
-            return tag_elem.dataValues.tag;
-        });
-        if (tag && !isExistTags) continue;
+        if (tag) {
+            const ret = tag_list.some((elem_tag) => elem_tag === tag);
+            if (!ret) continue;
+        }
 
         const favorited_user_id = find_favorited_user ? find_favorited_user.uid : '';
         const favorite_info = await getFavoriteInfo(article.uid, favorited_user_id);
@@ -335,4 +332,12 @@ module.exports.addComments = async (req, res) => {
             },
         },
     });
+};
+
+module.exports.getComments = async (req, res) => {
+    const slug = req.params.slug;
+    const user_uid = req.user_uid;
+    const comments = await models.Comments.findAllByArticle(models.Articles, slug);
+    console.log(comments);
+    return res.status(200).send();
 };

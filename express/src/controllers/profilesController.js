@@ -35,7 +35,6 @@ module.exports.getProfileByUserUid = async (req, res) => {
 module.exports.following = async (req, res) => {
     const username = req.params.username;
     const find_followee = await models.Users.findByUsername(username);
-    console.log(find_followee);
 
     if (!find_followee)
         return res.status(400).json({

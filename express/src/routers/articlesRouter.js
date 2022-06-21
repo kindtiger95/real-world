@@ -19,7 +19,7 @@ router.delete('/:slug', auth.requireAuth, articlesController.deleteArticleBySlug
 
 router.post('/:slug/comments', auth.requireAuth, articlesController.addComments);
 
-router.get('/:slug/comments');
+router.get('/:slug/comments', auth.optionalAuth, articlesController.getComments);
 
 router.delete('/:slug/comments/:id');
 

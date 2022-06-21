@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: true,
             charset: 'utf8',
             freezeTableName: true,
-        },
+        }
     );
     Comments.associate = (models) => {
         Comments.belongsTo(models.Users, {
@@ -35,6 +35,18 @@ module.exports = (sequelize, DataTypes) => {
         });
         Comments.belongsTo(models.Articles, {
             foreignKey: 'article_id',
+        });
+    };
+    Comments.findAllByArticle = async (association, slug) => {
+        return await Articles.findAll({
+            include: [
+                {
+                    model: association,
+                    required: true,
+                },
+            ],
+            order: [['createdAt', 'DESC']],
+            where: slug ? { '$Article.slug$': slug } : '',
         });
     };
     return Comments;
