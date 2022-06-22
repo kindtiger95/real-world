@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: true,
             charset: 'utf8',
             freezeTableName: true,
-        }
+        },
     );
 
     Follows.associate = (models) => {
@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
                 followee,
                 follower,
             },
-        }).dataValues;
+        });
     };
 
     return Follows;

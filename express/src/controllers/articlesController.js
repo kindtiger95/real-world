@@ -90,9 +90,10 @@ module.exports.getArticles = async (req, res) => {
         const favorited_user_id = find_favorited_user ? find_favorited_user.uid : '';
         const favorite_info = await getFavoriteInfo(article.uid, favorited_user_id);
         const is_following = user_uid
-            ? await models.Follows.findFollowing(user_uid, article.dataValues.User.uid)
+            ? await models.Follows.findFollowing(article.User.dataValues.uid, user_uid)
             : false;
 
+        if (favorited && !favorite_info.is_favorited) continue;
         const response_elem = {
             slug: article.dataValues.slug,
             title: article.dataValues.title,
@@ -177,16 +178,20 @@ module.exports.feedArticle = async (req, res) => {
     const user_uid = req.user_uid;
     const feed_articles = await models.Articles.findAllArticles(models.Users, limit, offset);
 
-    const response = {
-        articles: [],
+    const article_queue = {
+        articles_favorite: [],
+        articles_normal: [],
     };
 
     for (const article of feed_articles) {
         const response_elem = await createResponseArticle(article, user_uid);
-        response.articles.push(response_elem);
+        response_elem.article.favorited
+            ? article_queue.articles_favorite.push(response_elem)
+            : article_queue.articles_normal.push(response_elem);
     }
-    response.articlesCount = response.articles.length;
-
+    const response = {};
+    response.articlesCount = article_queue.articles_favorite.length + article_queue.articles_normal.length;
+    response.articles = [...article_queue.articles_favorite, ...article_queue.articles_normal];
     return res.status(200).json({
         ...response,
     });
@@ -310,7 +315,7 @@ module.exports.getComments = async (req, res) => {
     };
 
     for (const comment of comments) {
-        const author = await models.Users.findByPk(comment.Article.dataValues.author_id);
+        const author = await models.Users.findByPk(comment.dataValues.author_id);
         let following = false;
         if (user_uid) following = (await models.Follows.findFollowing(author.uid, user_uid)) ? true : false;
 
