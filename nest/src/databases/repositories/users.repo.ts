@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectEntityManager } from '@nestjs/typeorm';
-import { SignUpDto } from 'src/api/dto/users.dto';
+import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { UsersEntity } from '../entities/users.entity';
 
@@ -8,7 +7,7 @@ import { UsersEntity } from '../entities/users.entity';
 export class UsersRepo {
     private readonly _alias = 'users';
 
-    constructor(@InjectEntityManager() private readonly dataSource: DataSource) {}
+    constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
     async findByUsername(username: string): Promise<UsersEntity | null> {
         try {
@@ -26,14 +25,5 @@ export class UsersRepo {
             });
             return null;
         }
-    }
-
-    async createNewUser(signup_dto: SignUpDto, hashed_password: string) {
-        // return await this.dataSource
-        // .getRepository(UsersEntity)
-        // .createQueryBuilder(this._alias)
-        // .insert()
-        // .into()
-        return null;
     }
 }

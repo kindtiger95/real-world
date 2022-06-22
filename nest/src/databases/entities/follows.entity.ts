@@ -1,17 +1,54 @@
-import { CreateDateColumn, UpdateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    CreateDateColumn,
+    UpdateDateColumn,
+    Entity,
+    PrimaryGeneratedColumn,
+    ManyToOne,
+    JoinColumn,
+    Column,
+} from 'typeorm';
+import { UsersEntity } from './users.entity';
 
-@Entity()
-export class Follows {
+@Entity('Follows')
+export class FollowsEntity {
     @PrimaryGeneratedColumn()
     uid: number;
 
-    // followee: number;
+    @Column({ type: 'uuid' })
+    follower: number;
 
-    // follower: number;
+    @Column({ type: 'uuid' })
+    followee: number;
 
-    @CreateDateColumn()
+    @CreateDateColumn({
+        name: 'createdAt',
+    })
     created_at: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({
+        name: 'updatedAt',
+    })
     updated_at: Date;
+
+    @ManyToOne(() => UsersEntity, users => users.uid, {
+        createForeignKeyConstraints: true,
+        nullable: true,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+    })
+    @JoinColumn({
+        name: 'follower',
+    })
+    followee_users: UsersEntity[];
+
+    @ManyToOne(() => UsersEntity, users => users.uid, {
+        createForeignKeyConstraints: true,
+        nullable: true,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+    })
+    @JoinColumn({
+        name: 'followee',
+    })
+    follower_users: UsersEntity[];
 }

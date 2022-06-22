@@ -1,13 +1,25 @@
-import { CreateDateColumn, UpdateDateColumn, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    CreateDateColumn,
+    UpdateDateColumn,
+    Column,
+    Entity,
+    PrimaryGeneratedColumn,
+    ManyToOne,
+    JoinColumn,
+} from 'typeorm';
+import { ArticlesEntity } from './articles.entity';
+import { UsersEntity } from './users.entity';
 
-@Entity()
-export class Comments {
+@Entity('Comments')
+export class CommentsEntity {
     @PrimaryGeneratedColumn()
     uid: number;
 
-    // author_id: number;
+    @Column({ type: 'uuid' })
+    author_id: number;
 
-    // article_id: number;
+    @Column({ type: 'uuid' })
+    article_id: number;
 
     @Column({
         charset: 'utf8',
@@ -17,9 +29,35 @@ export class Comments {
     })
     body: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({
+        name: 'createdAt',
+    })
     created_at: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({
+        name: 'updatedAt',
+    })
     updated_at: Date;
+
+    @ManyToOne(() => UsersEntity, users => users.uid, {
+        createForeignKeyConstraints: true,
+        nullable: true,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+    })
+    @JoinColumn({
+        name: 'author_id',
+    })
+    users: UsersEntity;
+
+    @ManyToOne(() => ArticlesEntity, articles => articles.uid, {
+        createForeignKeyConstraints: true,
+        nullable: true,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+    })
+    @JoinColumn({
+        name: 'article_id',
+    })
+    articles: ArticlesEntity;
 }

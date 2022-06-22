@@ -44,7 +44,7 @@ export const typeOrmModuleOptions: TypeOrmModuleAsyncOptions = {
             password: configService.get('DB_PASSWORD', { infer: true }),
             database: configService.get('DB_DATABASE', { infer: true }),
             entities: [],
-            synchronize: false,
+            synchronize: true,
             autoLoadEntities: true,
             logging: currentNodeEnv === 'development' ? true : false,
         };
