@@ -33,14 +33,14 @@ export class UsersEntity {
     @Column({
         charset: 'utf8',
         collation: 'utf8_general_ci',
-        nullable: false,
+        nullable: true,
     })
     bio: string;
 
     @Column({
         charset: 'utf8',
         collation: 'utf8_general_ci',
-        nullable: false,
+        nullable: true,
     })
     image: string;
 

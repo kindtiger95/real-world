@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
-import { UsersDto } from '../dto/users.dto';
+import { UsersDto } from 'src/commons/dto/users.dto';
 import { ArticlesService } from '../services/articles.service';
 
 @Controller('/api/articles')

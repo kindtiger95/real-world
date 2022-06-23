@@ -1,8 +1,9 @@
 import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepo } from 'src/databases/repositories/users.repo';
-import { SignUpDto } from '../dto/users.dto';
 import * as bcrypt from 'bcrypt';
+import { ReqLoginDto, ReqSignUpDto } from 'src/commons/dto/users.dto';
+import { JwtPayload } from 'src/commons/common.type';
 
 @Injectable()
 export class UsersService {
@@ -12,24 +13,27 @@ export class UsersService {
         return '';
     }
 
-    async signUp(user: SignUpDto) {
-        const { email, password, username } = user;
+    async signUp(user: ReqSignUpDto) {
+        const { password, username } = user;
 
         const found = await this._usersRepo.findByUsername(username);
-        if (!found) throw new UnauthorizedException();
+        if (found) throw new UnauthorizedException();
 
         const hashed = await bcrypt.hash(password, 10);
-        const userId = await this._usersRepo.createNewUser(user, hashed);
-
-        if (!userId) throw new InternalServerErrorException();
-        const token = this._jwtService.sign(userId);
+        const insert_ret = await this._usersRepo.createNewUser(user, hashed);
+        if (!insert_ret) throw new InternalServerErrorException();
+        const user_inserted = await this._usersRepo.findUsersByPk(insert_ret.identifiers[0].uid);
+        const payload: JwtPayload = {
+            user_uid: user_inserted.uid,
+        };
+        const token = this._jwtService.sign(payload);
         return {
             user: {
-                email,
+                email: user_inserted.email,
                 token,
-                username,
-                bio: '',
-                image: null,
+                username: user_inserted.username,
+                bio: user_inserted.bio,
+                image: user_inserted.image,
             },
         };
     }
@@ -38,7 +42,21 @@ export class UsersService {
         return user;
     }
 
-    async login(user: any) {
-        return user;
+    async login(user: ReqLoginDto) {
+        const searched_user = await this._usersRepo.findUsersByEmail(user.email);
+        if (!user) throw new UnauthorizedException();
+        const payload: JwtPayload = {
+            user_uid: searched_user.uid,
+        };
+        const token = this._jwtService.sign(payload);
+        return {
+            user: {
+                email: searched_user.email,
+                token,
+                username: searched_user.username,
+                bio: searched_user.bio,
+                image: searched_user.image,
+            },
+        };
     }
 }

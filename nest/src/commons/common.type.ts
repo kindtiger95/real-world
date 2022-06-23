@@ -5,3 +5,7 @@ export interface UsersScheme {
     bio: string;
     image: string;
 }
+
+export interface JwtPayload {
+    user_uid: number;
+}
