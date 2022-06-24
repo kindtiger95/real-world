@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ReqLoginDto, ReqSignUpDto } from 'src/commons/dto/users.dto';
-import { JwtAuthGuard } from 'src/commons/guard/jwt.strategy';
+import { JwtAuthGuard } from 'src/commons/guard/auth/jwt.strategy';
 import { UsersService } from '../services/users.service';
 
 @Controller('/api')

@@ -10,17 +10,18 @@ import { ProfilesService } from './services/profiles.service';
 import { TagsService } from './services/tags.service';
 import { UsersService } from './services/users.service';
 import { PassportModule } from '@nestjs/passport';
-import { JwtAuthGuard, JwtStrategy } from 'src/commons/guard/jwt.strategy';
+import { AuthModule } from 'src/commons/guard/auth/auth.module';
 
 @Module({
     imports: [
+        AuthModule,
         MysqlModule,
         PassportModule,
         JwtModule.register({
             secret: 'test',
         }),
     ],
-    providers: [ArticlesService, ProfilesService, TagsService, UsersService, JwtAuthGuard, JwtStrategy],
+    providers: [ArticlesService, ProfilesService, TagsService, UsersService],
     controllers: [ArticlesController, ProfilesController, TagsController, UsersController],
 })
 export class ApiModule {}

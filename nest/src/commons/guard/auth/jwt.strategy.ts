@@ -3,7 +3,7 @@ import { AuthGuard, PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersRepo } from 'src/databases/repositories/users.repo';
-import { JwtPayload } from '../common.type';
+import { JwtPayload } from 'src/commons/common.type';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -25,7 +25,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
     handleRequest<TUser = any>(err: any, user: any, info: any, context: ExecutionContext): TUser {
-        console.log('1');
         if (err || info || !user) throw err || new UnauthorizedException();
         const getBody = context.switchToHttp().getRequest<Request>().body;
         getBody.user_uid = user.user_uid;
