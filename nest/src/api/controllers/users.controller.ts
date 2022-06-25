@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Post, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ReqLoginDto, ReqSignUpDto } from 'src/commons/dto/users.dto';
+import { Body, Controller, Get, Headers, Post, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { AuthInfo } from 'src/commons/common.type';
+import { ReqLoginDto, ReqSignUpDto, ReqUpdateDto } from 'src/commons/dto/users.dto';
 import { JwtAuthGuard } from 'src/commons/guard/auth/jwt.strategy';
 import { UsersService } from '../services/users.service';
 
@@ -10,8 +11,12 @@ export class UsersController {
 
     @Get('user')
     @UseGuards(JwtAuthGuard)
-    async checkCurrentUser() {
-        return this.usersService.checkCurrentUser();
+    async checkCurrentUser(@Headers('Authorization') auth: string, @Body() body: any) {
+        const auth_info: AuthInfo = {
+            token: auth.split(' ')[1],
+            user_uid: body.user_uid,
+        };
+        return this.usersService.checkCurrentUser(auth_info);
     }
 
     @Post('users')
@@ -20,8 +25,17 @@ export class UsersController {
     }
 
     @Put('user')
-    async modifiedInfo(@Body('user') user: any) {
-        return this.usersService.modifiedInfo(user);
+    @UseGuards(JwtAuthGuard)
+    async modifiedInfo(
+        @Headers('Authorization') auth: string,
+        @Body('user') user: ReqUpdateDto,
+        @Body('user_uid') uid: number,
+    ) {
+        const auth_info: AuthInfo = {
+            token: auth.split(' ')[1],
+            user_uid: uid,
+        };
+        return this.usersService.modifiedInfo(user, auth_info);
     }
 
     @Post('users/login')

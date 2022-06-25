@@ -9,3 +9,8 @@ export interface UsersScheme {
 export interface JwtPayload {
     user_uid: number;
 }
+
+export interface AuthInfo {
+    user_uid: number;
+    token: string;
+}

@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { MysqlModule } from 'src/databases/mysql.module';
 import { ArticlesController } from './controllers/articles.controller';
 import { ProfilesController } from './controllers/profiles.controller';
@@ -13,14 +12,7 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthModule } from 'src/commons/guard/auth/auth.module';
 
 @Module({
-    imports: [
-        AuthModule,
-        MysqlModule,
-        PassportModule,
-        JwtModule.register({
-            secret: 'test',
-        }),
-    ],
+    imports: [AuthModule, MysqlModule, PassportModule],
     providers: [ArticlesService, ProfilesService, TagsService, UsersService],
     controllers: [ArticlesController, ProfilesController, TagsController, UsersController],
 })

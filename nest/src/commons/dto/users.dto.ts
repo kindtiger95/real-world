@@ -1,5 +1,5 @@
 import { OmitType, PickType } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { UsersScheme } from 'src/commons/common.type';
 
 export class UsersDto implements UsersScheme {
@@ -35,3 +35,21 @@ export class ReqSignUpDto extends PickType(UsersDto, ['email', 'username']) {
 }
 
 export class ReqLoginDto extends PickType(UsersDto, ['email', 'password']) {}
+
+export class ReqUpdateDto extends OmitType(UsersDto, ['token']) {
+    @IsOptional()
+    @IsEmail()
+    email: string;
+
+    @IsOptional()
+    username: string;
+
+    @IsOptional()
+    password: string;
+
+    @IsOptional()
+    image: string;
+
+    @IsOptional()
+    bio: string;
+}

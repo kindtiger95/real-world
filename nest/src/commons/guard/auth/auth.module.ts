@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { MysqlModule } from 'src/databases/mysql.module';
-import { JwtAuthGuard, JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
     imports: [
@@ -12,7 +12,7 @@ import { JwtAuthGuard, JwtStrategy } from './jwt.strategy';
             secret: 'test',
         }),
     ],
-    providers: [JwtStrategy, JwtAuthGuard],
-    exports: [JwtStrategy, JwtAuthGuard],
+    providers: [JwtStrategy],
+    exports: [JwtStrategy, JwtModule],
 })
 export class AuthModule {}

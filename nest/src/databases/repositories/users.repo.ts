@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { ReqSignUpDto } from 'src/commons/dto/users.dto';
+import { ReqSignUpDto, ReqUpdateDto } from 'src/commons/dto/users.dto';
 import { DataSource } from 'typeorm';
 import { UsersEntity } from '../entities/users.entity';
 
@@ -77,6 +77,30 @@ export class UsersRepo {
                     email,
                 })
                 .getOne();
+        } catch (error) {
+            console.log({
+                status: '에러',
+            });
+            return null;
+        }
+    }
+
+    async updateByUserId(uid: number, user: ReqUpdateDto) {
+        const updated_data = {};
+        user.username ? (updated_data['username'] = user.username) : '';
+        user.email ? (updated_data['email'] = user.email) : '';
+        user.password ? (updated_data['password'] = user.password) : '';
+        user.image ? (updated_data['image'] = user.image) : '';
+        user.bio ? (updated_data['bio'] = user.bio) : '';
+
+        try {
+            return await this._dataSource
+                .getRepository(UsersEntity)
+                .createQueryBuilder()
+                .update()
+                .set(updated_data)
+                .where(`uid = :uid`, { uid })
+                .execute();
         } catch (error) {
             console.log({
                 status: '에러',

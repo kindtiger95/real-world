@@ -9,7 +9,7 @@ import { JwtPayload } from 'src/commons/common.type';
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(private readonly usersRepo: UsersRepo) {
         super({
-            jwtFromRequest: ExtractJwt.fromHeader('Token'),
+            jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Token'),
             ignoreExpiration: false,
             secretOrKey: 'test',
         });
