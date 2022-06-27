@@ -328,4 +328,16 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+HELP.md
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### IntelliJ IDEA ###
+.idea
+*.iml
+*.ipr
+!**/src/main/**/out/
+!**/src/test/**/out/
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,intellij,java,gradle,node
