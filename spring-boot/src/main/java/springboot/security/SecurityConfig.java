@@ -1,24 +1,26 @@
 package springboot.security;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 
-@Configuration
+import java.util.ArrayList;
+
+@EnableWebSecurity(debug = true)
 public class SecurityConfig {
 
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final ProviderManager providerManager;
 
     public SecurityConfig(
-            AuthenticationManagerBuilder authenticationManagerBuilder,
             JwtCustomProvider jwtCustomProvider
     ) {
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-        this.authenticationManagerBuilder.authenticationProvider(jwtCustomProvider);
+        ArrayList<AuthenticationProvider> authenticationProviders = new ArrayList<>();
+        authenticationProviders.add(jwtCustomProvider);
+        this.providerManager = new ProviderManager(authenticationProviders);
     }
 
     @Bean
@@ -30,9 +32,10 @@ public class SecurityConfig {
         http.sessionManagement().disable();
         http.exceptionHandling().disable();
         http.httpBasic().disable();
+        http.formLogin().disable();
         http.logout().disable();
         http.headers().disable();
-        http.addFilterBefore(new JwtCustomFilter(this.authenticationManagerBuilder.getOrBuild()), WebAsyncManagerIntegrationFilter.class);
+        http.addFilterBefore(new JwtCustomFilter(this.providerManager), WebAsyncManagerIntegrationFilter.class);
         return http.build();
     }
 }
