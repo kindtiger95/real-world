@@ -12,4 +12,8 @@ public class CustomProperties {
     @Getter
     @Setter
     private String jwtSecretKey;
+
+    @Getter
+    @Setter
+    private String jwtRoles;
 }
