@@ -1,13 +1,9 @@
 package springboot.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import springboot.entities.UserDto;
+import org.springframework.web.bind.annotation.*;
+import springboot.controllers.dto.UserDto;
 import springboot.services.UserService;
 
 @Controller
@@ -18,9 +14,28 @@ public class UserController {
 
     @PostMapping("/users/login")
     @ResponseBody
-    public UserDto login(@RequestBody UserDto.Login loginDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(authentication);
-        return this.userService.login(loginDto);
+    public UserDto login(@RequestBody UserDto.ReqLoginDto reqLoginDto) {
+        return this.userService.login(reqLoginDto);
+    }
+
+    @PostMapping("/users")
+    @ResponseBody
+    public UserDto register(@RequestBody UserDto.ReqRegisterDto reqRegisterDto) {
+        return UserDto.builder().email("inbeom@naver.com").image(null).bio("").token("gasg")
+                .build();
+    }
+
+    @GetMapping("/user")
+    @ResponseBody
+    public UserDto getUserPrivateInfo() {
+        return UserDto.builder().email("inbeom@naver.com").image(null).bio("").token("gasg")
+                .build();
+    }
+
+    @PutMapping("/user")
+    @ResponseBody
+    public UserDto updateUserInfo(@RequestBody UserDto.ReqUpdateDto reqUpdateDto) {
+        return UserDto.builder().email("inbeom@naver.com").image(null).bio("").token("gasg")
+                .build();
     }
 }

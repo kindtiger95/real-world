@@ -1,4 +1,4 @@
-package springboot.entities;
+package springboot.controllers.dto;
 
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
 
@@ -39,9 +39,33 @@ public class UserDto {
     @ToString
     @JsonTypeName("user")
     @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
-    public static class Login {
+    public static class ReqLoginDto {
         private String email;
 
         private String password;
+    }
+
+    @Getter
+    @ToString
+    @JsonTypeName("user")
+    @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
+    public static class ReqRegisterDto {
+        private String username;
+
+        private String email;
+
+        private String password;
+    }
+
+    @Getter
+    @ToString
+    @JsonTypeName("user")
+    @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
+    public static class ReqUpdateDto {
+        private String email;
+
+        private String bio;
+
+        private String image;
     }
 }

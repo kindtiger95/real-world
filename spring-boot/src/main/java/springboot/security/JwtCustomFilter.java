@@ -12,28 +12,31 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
 public class JwtCustomFilter extends OncePerRequestFilter {
 
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String BEARER_PREFIX = "Token ";
+    private final String AUTHORIZATION_HEADER = "Authorization";
+    private final String BEARER_PREFIX = "Token ";
+    private final RequestMatcher requestMatcher = new AntPathRequestMatcher("/users/**");
 
     private final AuthenticationManager authenticationManager;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String jwt = getToken(request).orElseThrow(() -> new SecurityException("error!"));
-
-        try {
-            Authentication authentication = authenticationManager.authenticate(new JwtCustomToken(jwt));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (AuthenticationException authenticationException) {
-            SecurityContextHolder.clearContext();
+        if (!this.requestMatcher.matches(request)) {
+            String jwt = getToken(request).orElseThrow(() -> new SecurityException("error!"));
+            try {
+                Authentication authentication = authenticationManager.authenticate(new JwtCustomToken(jwt));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (AuthenticationException authenticationException) {
+                SecurityContextHolder.clearContext();
+            }
         }
-
         filterChain.doFilter(request, response);
     }
 

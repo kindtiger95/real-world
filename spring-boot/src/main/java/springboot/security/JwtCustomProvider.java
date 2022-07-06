@@ -12,12 +12,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import springboot.CustomProperties;
 
-import java.lang.reflect.Array;
-import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class JwtCustomProvider implements AuthenticationProvider {
