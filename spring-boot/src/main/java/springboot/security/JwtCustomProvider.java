@@ -17,11 +17,11 @@ import java.util.List;
 @Component
 public class JwtCustomProvider implements AuthenticationProvider {
 
-    private final String ROLES;
+    private final String securityRole;
     private final JwtUtility jwtUtility;
 
     public JwtCustomProvider(CustomProperties customProperties, JwtUtility jwtUtility) {
-        this.ROLES = customProperties.getJwtRoles();
+        this.securityRole = customProperties.getSecurityRole();
         this.jwtUtility = jwtUtility;
     }
 
@@ -44,7 +44,7 @@ public class JwtCustomProvider implements AuthenticationProvider {
 
     private Collection<? extends GrantedAuthority> createGrantedAuthorities(Claims claims) {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        Object roles = claims.get(ROLES);
+        Object roles = claims.get(this.securityRole);
         if (roles instanceof ArrayList<?>) {
             for (Object role : (ArrayList<?>) roles) {
                 if (role instanceof String)

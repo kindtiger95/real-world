@@ -21,16 +21,15 @@ public class JwtCustomFilter extends OncePerRequestFilter {
 
     private final String AUTHORIZATION_HEADER = "Authorization";
     private final String BEARER_PREFIX = "Token ";
-    private final RequestMatcher requestMatcher = new AntPathRequestMatcher("/users/**");
     private final AuthenticationManager authenticationManager;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        if (!this.requestMatcher.matches(request)) {
-            String jwt = getToken(request).orElseThrow(() -> new SecurityException("error!"));
+        String jwtToken = getToken(request);
+        if (jwtToken != null) {
             try {
-                Authentication authentication = authenticationManager.authenticate(new JwtCustomToken(jwt));
+                Authentication authentication = authenticationManager.authenticate(new JwtCustomToken(jwtToken));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (AuthenticationException authenticationException) {
                 SecurityContextHolder.clearContext();
@@ -40,10 +39,9 @@ public class JwtCustomFilter extends OncePerRequestFilter {
     }
 
     /*********************************** Private Function **********************************/
-    private Optional<String> getToken(HttpServletRequest request) {
+    private String getToken(HttpServletRequest request) {
         String authHeader = request.getHeader(AUTHORIZATION_HEADER);
-        String parsedToken = authHeader == null ? null
+        return authHeader == null ? null
                 : authHeader.startsWith(BEARER_PREFIX) ? authHeader.substring(BEARER_PREFIX.length()) : null;
-        return Optional.ofNullable(parsedToken);
     }
 }

@@ -6,14 +6,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
+@Getter
+@Setter
 @ConfigurationProperties("custom")
 public class CustomProperties {
 
-    @Getter
-    @Setter
     private String jwtSecretKey;
 
-    @Getter
-    @Setter
-    private String jwtRoles;
+    private String jwtRole;
+
+    private String securityRole;
 }

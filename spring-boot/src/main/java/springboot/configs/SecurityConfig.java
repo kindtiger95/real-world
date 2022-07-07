@@ -15,33 +15,56 @@ import springboot.security.JwtCustomProvider;
 public class SecurityConfig {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final String jwtRole;
 
     @Autowired
     public SecurityConfig(
-            AuthenticationManagerBuilder authenticationManagerBuilder,
-            JwtCustomProvider jwtCustomProvider
+        AuthenticationManagerBuilder authenticationManagerBuilder,
+        JwtCustomProvider jwtCustomProvider,
+        CustomProperties customProperties
     ) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         authenticationManagerBuilder.authenticationProvider(jwtCustomProvider);
+        this.jwtRole = customProperties.getJwtRole();
     }
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() { return new BCryptPasswordEncoder(); }
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .addFilterAfter(new JwtCustomFilter(this.authenticationManagerBuilder.getOrBuild()), WebAsyncManagerIntegrationFilter.class)
-                .requestCache().disable()
-                .anonymous().disable()
-                .securityContext().disable()
-                .sessionManagement().disable()
-                .exceptionHandling().disable()
-                .formLogin().disable()
-                .logout().disable()
-                .httpBasic().disable()
-                .headers().disable();
+            .csrf()
+            .disable()
+            .addFilterAfter(new JwtCustomFilter(this.authenticationManagerBuilder.getOrBuild()),
+                WebAsyncManagerIntegrationFilter.class)
+//            .requestCache()
+//            .disable()
+//            .anonymous()
+//            .disable()
+//            .securityContext()
+//            .disable()
+//            .sessionManagement()
+//            .disable()
+//            .exceptionHandling()
+//            .disable()
+//            .formLogin()
+//            .disable()
+//            .logout()
+//            .disable()
+//            .httpBasic()
+//            .disable()
+//            .headers()
+//            .disable()
+
+            .authorizeRequests()
+            .antMatchers("/users/**")
+            .permitAll()
+            .anyRequest()
+            .hasAnyRole(this.jwtRole);
+
         return http.build();
     }
 }
