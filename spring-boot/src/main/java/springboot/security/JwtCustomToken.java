@@ -1,18 +1,19 @@
 package springboot.security;
 
-import java.util.Collection;
-
+import io.jsonwebtoken.Claims;
 import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
 
 public class JwtCustomToken extends AbstractAuthenticationToken {
 
     @Getter
     private String jsonWebToken;
 
-    private Object credentials;
-    private Object principal;
+    private String credentials;
+    private Claims principal;
 
     public JwtCustomToken(String jsonWebToken) {
         super(null);
@@ -20,7 +21,7 @@ public class JwtCustomToken extends AbstractAuthenticationToken {
         this.setAuthenticated(false);
     }
 
-    public JwtCustomToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
+    public JwtCustomToken(Claims principal, String credentials, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
         this.credentials = credentials;
@@ -28,12 +29,12 @@ public class JwtCustomToken extends AbstractAuthenticationToken {
     }
 
     @Override
-    public Object getCredentials() {
+    public String getCredentials() {
         return this.credentials;
     }
 
     @Override
-    public Object getPrincipal() {
+    public Claims getPrincipal() {
         return this.principal;
     }
 }

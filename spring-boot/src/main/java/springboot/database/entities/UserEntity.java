@@ -1,20 +1,24 @@
 package springboot.database.entities;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.math.BigInteger;
 import java.util.Date;
 
 @Entity(name = "user")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 public class UserEntity {
+    public UserEntity() {}
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long uid;
 
     @Column
     private String email;

@@ -2,15 +2,13 @@ package springboot.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SecurityException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
-import springboot.CustomProperties;
+import springboot.configs.CustomProperties;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,23 +18,23 @@ import java.util.List;
 public class JwtCustomProvider implements AuthenticationProvider {
 
     private final String ROLES;
-    private final JwtParser jwtParser;
+    private final JwtUtility jwtUtility;
 
-    public JwtCustomProvider(CustomProperties customProperties) {
+    public JwtCustomProvider(CustomProperties customProperties, JwtUtility jwtUtility) {
         this.ROLES = customProperties.getJwtRoles();
-        byte[] secretKeyByte = customProperties.getJwtSecretKey().getBytes();
-        this.jwtParser = Jwts.parserBuilder().setSigningKey(secretKeyByte).build();
+        this.jwtUtility = jwtUtility;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Claims claims;
+        String token = (String) authentication.getDetails();
         try {
-            claims = this.jwtParser.parseClaimsJws((String) authentication.getDetails()).getBody();
+            claims = this.jwtUtility.jwtParse(token);
         } catch (JwtException jwtException) {
             throw new SecurityException("error test", jwtException);
         }
-        return new JwtCustomToken(claims.getSubject(), "", this.createGrantedAuthorities(claims));
+        return new JwtCustomToken(claims, token, this.createGrantedAuthorities(claims));
     }
 
     @Override

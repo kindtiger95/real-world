@@ -5,34 +5,19 @@ import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Builder
 @ToString
+@Getter
+@Setter
 @AllArgsConstructor
 public class UserDto {
-    @Getter
-    @Setter
+
     private String email;
-
-    @Getter
-    @Setter
     private String token;
-
-    @Getter
-    @Setter
     private String username;
-
-    @Getter
-    @Setter
     private String bio;
-
-    @Getter
-    @Setter
     private String image;
 
     @Getter

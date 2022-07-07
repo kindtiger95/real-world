@@ -22,7 +22,6 @@ public class JwtCustomFilter extends OncePerRequestFilter {
     private final String AUTHORIZATION_HEADER = "Authorization";
     private final String BEARER_PREFIX = "Token ";
     private final RequestMatcher requestMatcher = new AntPathRequestMatcher("/users/**");
-
     private final AuthenticationManager authenticationManager;
 
     @Override
