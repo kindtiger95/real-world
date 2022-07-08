@@ -4,7 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import springboot.controllers.dto.UserDto;
 import springboot.security.JwtCustomToken;
 import springboot.services.UserService;
@@ -41,8 +45,10 @@ public class UserController {
     @GetMapping("/user")
     @ResponseBody
     public UserDto getUserPrivateInfo() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext()
+                                                             .getAuthentication();
         try {
+            System.out.println(authentication);
             return this.userService.getUserPrivateInfo((JwtCustomToken) authentication);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -53,7 +59,22 @@ public class UserController {
     @PutMapping("/user")
     @ResponseBody
     public UserDto updateUserInfo(@RequestBody UserDto.ReqUpdateDto reqUpdateDto) {
-        return UserDto.builder().email("inbeom@naver.com").image(null).bio("").token("gasg")
-            .build();
+        return UserDto.builder()
+                      .email("inbeom@naver.com")
+                      .image(null)
+                      .bio("")
+                      .token("gasg")
+                      .build();
+    }
+
+    @GetMapping("/check")
+    @ResponseBody
+    public UserDto test() {
+        return UserDto.builder()
+                      .email("inbeom@naver.com")
+                      .image(null)
+                      .bio("")
+                      .token("gasg")
+                      .build();
     }
 }

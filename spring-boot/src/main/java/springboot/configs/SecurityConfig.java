@@ -2,10 +2,14 @@ package springboot.configs;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import springboot.security.JwtCustomFilter;
@@ -15,7 +19,7 @@ import springboot.security.JwtCustomProvider;
 public class SecurityConfig {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final String jwtRole;
+    private final CustomProperties customProperties;
 
     @Autowired
     public SecurityConfig(
@@ -24,8 +28,8 @@ public class SecurityConfig {
         CustomProperties customProperties
     ) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.customProperties = customProperties;
         authenticationManagerBuilder.authenticationProvider(jwtCustomProvider);
-        this.jwtRole = customProperties.getJwtRole();
     }
 
     @Bean
@@ -35,35 +39,39 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf()
+        http.setSharedObject(AuthenticationManager.class, this.authenticationManagerBuilder.getOrBuild());
+        http.csrf()
             .disable()
-            .addFilterAfter(new JwtCustomFilter(this.authenticationManagerBuilder.getOrBuild()),
-                WebAsyncManagerIntegrationFilter.class)
-//            .requestCache()
-//            .disable()
-//            .anonymous()
-//            .disable()
-//            .securityContext()
-//            .disable()
-//            .sessionManagement()
-//            .disable()
-//            .exceptionHandling()
-//            .disable()
-//            .formLogin()
-//            .disable()
-//            .logout()
-//            .disable()
-//            .httpBasic()
-//            .disable()
-//            .headers()
-//            .disable()
-
             .authorizeRequests()
+            .antMatchers("/user/**")
+            .hasAnyAuthority(customProperties.getJwtRole())
+            .antMatchers("/check/**")
+            .hasAnyAuthority(customProperties.getBasicRole())
             .antMatchers("/users/**")
             .permitAll()
-            .anyRequest()
-            .hasAnyRole(this.jwtRole);
+            .and()
+            .addFilterAfter(new JwtCustomFilter(http.getSharedObject(AuthenticationManager.class)), WebAsyncManagerIntegrationFilter.class)
+//            .addFilterAfter(new JwtCustomFilter(this.authenticationManagerBuilder.getOrBuild()), WebAsyncManagerIntegrationFilter.class)
+            .httpBasic()
+            .and()
+            .requestCache()
+            .disable()
+            .securityContext()
+            .disable()
+            .sessionManagement()
+            .disable()
+            .exceptionHandling()
+            .disable()
+            .formLogin()
+            .disable()
+            .logout()
+            .disable()
+            .headers()
+            .disable();
+        //            .httpBasic()
+        //            .disable()
+//                    .anonymous()
+//                    .disable();
 
         return http.build();
     }

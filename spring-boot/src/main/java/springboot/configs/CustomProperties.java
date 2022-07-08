@@ -16,4 +16,10 @@ public class CustomProperties {
     private String jwtRole;
 
     private String securityRole;
+
+    private String basicRole;
+
+    private String basicUser;
+
+    private String basicPassword;
 }

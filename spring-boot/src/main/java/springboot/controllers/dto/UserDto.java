@@ -1,11 +1,15 @@
 package springboot.controllers.dto;
 
-import static com.fasterxml.jackson.annotation.JsonTypeInfo.*;
+import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Builder
 @ToString
@@ -25,6 +29,7 @@ public class UserDto {
     @JsonTypeName("user")
     @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
     public static class ReqLoginDto {
+
         private String email;
 
         private String password;
@@ -35,6 +40,7 @@ public class UserDto {
     @JsonTypeName("user")
     @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
     public static class ReqRegisterDto {
+
         private String username;
 
         private String email;
@@ -47,6 +53,7 @@ public class UserDto {
     @JsonTypeName("user")
     @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
     public static class ReqUpdateDto {
+
         private String email;
 
         private String bio;
