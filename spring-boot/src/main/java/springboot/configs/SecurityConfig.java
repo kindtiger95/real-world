@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
+import springboot.security.BasicCustomProvider;
 import springboot.security.JwtCustomFilter;
 import springboot.security.JwtCustomProvider;
 
@@ -25,11 +26,13 @@ public class SecurityConfig {
     public SecurityConfig(
         AuthenticationManagerBuilder authenticationManagerBuilder,
         JwtCustomProvider jwtCustomProvider,
+        BasicCustomProvider basicCustomProvider,
         CustomProperties customProperties
     ) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.customProperties = customProperties;
         authenticationManagerBuilder.authenticationProvider(jwtCustomProvider);
+        authenticationManagerBuilder.authenticationProvider(basicCustomProvider);
     }
 
     @Bean
