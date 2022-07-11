@@ -16,6 +16,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @AllArgsConstructor
+@JsonTypeName("user")
+@JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
 public class UserDto {
 
     private String email;

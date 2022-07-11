@@ -3,26 +3,28 @@ package springboot.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.SecurityException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import springboot.configs.CustomProperties;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import springboot.database.repositories.UserRepository;
 
 @Component
 public class JwtCustomProvider implements AuthenticationProvider {
 
     private final String securityRole;
     private final JwtUtility jwtUtility;
+    private final UserRepository userRepository;
 
-    public JwtCustomProvider(CustomProperties customProperties, JwtUtility jwtUtility) {
+    public JwtCustomProvider(CustomProperties customProperties, JwtUtility jwtUtility, UserRepository userRepository) {
         this.securityRole = customProperties.getSecurityRole();
         this.jwtUtility = jwtUtility;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -47,8 +49,9 @@ public class JwtCustomProvider implements AuthenticationProvider {
         Object roles = claims.get(this.securityRole);
         if (roles instanceof ArrayList<?>) {
             for (Object role : (ArrayList<?>) roles) {
-                if (role instanceof String)
+                if (role instanceof String) {
                     grantedAuthorities.add(() -> (String) role);
+                }
             }
         }
         return grantedAuthorities;

@@ -1,6 +1,7 @@
 package springboot.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -9,18 +10,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import springboot.controllers.dto.UserDto;
 import springboot.security.JwtCustomToken;
 import springboot.services.UserService;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
     @PostMapping("/users/login")
-    @ResponseBody
     public UserDto login(@RequestBody UserDto.ReqLoginDto reqLoginDto) {
         System.out.println(reqLoginDto);
         try {
@@ -32,7 +33,6 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    @ResponseBody
     public UserDto register(@RequestBody UserDto.ReqRegisterDto reqRegisterDto) {
         try {
             return this.userService.register(reqRegisterDto);
@@ -43,7 +43,6 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    @ResponseBody
     public UserDto getUserPrivateInfo() {
         Authentication authentication = SecurityContextHolder.getContext()
                                                              .getAuthentication();
@@ -57,7 +56,6 @@ public class UserController {
     }
 
     @PutMapping("/user")
-    @ResponseBody
     public UserDto updateUserInfo(@RequestBody UserDto.ReqUpdateDto reqUpdateDto) {
         return UserDto.builder()
                       .email("inbeom@naver.com")
@@ -68,13 +66,7 @@ public class UserController {
     }
 
     @GetMapping("/check")
-    @ResponseBody
-    public UserDto test() {
-        return UserDto.builder()
-                      .email("inbeom@naver.com")
-                      .image(null)
-                      .bio("")
-                      .token("gasg")
-                      .build();
+    public String test() {
+        return "Check";
     }
 }
