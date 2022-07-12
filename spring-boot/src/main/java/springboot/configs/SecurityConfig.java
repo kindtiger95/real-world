@@ -1,5 +1,6 @@
 package springboot.configs;
 
+import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -51,7 +52,7 @@ public class SecurityConfig {
             .permitAll()
             .and()
             .addFilterAfter(new JwtCustomFilter(http.getSharedObject(AuthenticationManager.class)), WebAsyncManagerIntegrationFilter.class)
-//            .addFilterAfter(new JwtCustomFilter(this.authenticationManagerBuilder.getOrBuild()), WebAsyncManagerIntegrationFilter.class)
+            //            .addFilterAfter(new JwtCustomFilter(this.authenticationManagerBuilder.getOrBuild()), WebAsyncManagerIntegrationFilter.class)
             .httpBasic()
             .and()
             .requestCache()
@@ -70,8 +71,8 @@ public class SecurityConfig {
             .disable();
         //            .httpBasic()
         //            .disable()
-//                    .anonymous()
-//                    .disable();
+        //            .anonymous()
+        //            .disable();
 
         return http.build();
     }

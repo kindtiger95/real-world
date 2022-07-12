@@ -1,20 +1,18 @@
 package springboot.database.entities;
 
+import java.time.LocalDateTime;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.math.BigInteger;
-import java.util.Date;
 
-@Entity(name = "user")
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-public class UserEntity {
-    public UserEntity() {}
+@Entity(name = "Users")
+public class UsersEntity {
+    public UsersEntity() {}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,8 +34,10 @@ public class UserEntity {
     private String image;
 
     @CreationTimestamp
-    private Date created_at;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    private Date updated_at;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

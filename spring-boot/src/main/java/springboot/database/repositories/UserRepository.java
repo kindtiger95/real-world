@@ -32,14 +32,10 @@ public class UserRepository {
     }
 
     public Optional<UserEntity> findByEmail(String email) {
-        System.out.println("email = " + email);
         String jpql = "SELECT u FROM user u WHERE u.email = :email";
         List<UserEntity> resultList = entitymanager.createQuery(jpql, UserEntity.class)
                                                    .setParameter("email", email)
                                                    .getResultList();
-        for (UserEntity userEntity : resultList) {
-            System.out.println(userEntity);
-        }
         return resultList.stream().findAny();
     }
 }
