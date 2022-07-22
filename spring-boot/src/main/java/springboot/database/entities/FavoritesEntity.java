@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
 @Entity(name = "Favorites")
 public class FavoritesEntity {
     public FavoritesEntity() {}

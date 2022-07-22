@@ -6,7 +6,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.controllers.dto.UserDto;
-import springboot.database.entities.UserEntity;
+import springboot.database.entities.UsersEntity;
 import springboot.database.repositories.UserRepository;
 import springboot.security.JwtCustomToken;
 import springboot.security.JwtUtility;
@@ -21,20 +21,20 @@ public class UserService {
     private final JwtUtility jwtUtility;
 
     public UserDto login(UserDto.ReqLoginDto reqLoginDto) throws Exception {
-        UserEntity userEntity = this.userRepository.findByEmail(reqLoginDto.getEmail())
-                                                   .orElseThrow(() -> new Exception("No exist user."));
+        UsersEntity usersEntity = this.userRepository.findByEmail(reqLoginDto.getEmail())
+                                                    .orElseThrow(() -> new Exception("No exist user."));
 
-        boolean matches = bCryptPasswordEncoder.matches(reqLoginDto.getPassword(), userEntity.getPassword());
+        boolean matches = bCryptPasswordEncoder.matches(reqLoginDto.getPassword(), usersEntity.getPassword());
         if (!matches) throw new Exception("Password is not correct.");
 
-        String signedToken = this.jwtUtility.jwtSign(userEntity.getUid(), userEntity.getUsername());
+        String signedToken = this.jwtUtility.jwtSign(usersEntity.getUid(), usersEntity.getUsername());
 
         return UserDto.builder()
-                      .bio(userEntity.getBio())
-                      .image(userEntity.getImage())
-                      .email(userEntity.getEmail())
+                      .bio(usersEntity.getBio())
+                      .image(usersEntity.getImage())
+                      .email(usersEntity.getEmail())
                       .token(signedToken)
-                      .username(userEntity.getUsername())
+                      .username(usersEntity.getUsername())
                       .build();
     }
 
@@ -45,7 +45,7 @@ public class UserService {
                       });
 
         String encryptedPw = this.bCryptPasswordEncoder.encode(reqRegisterDto.getPassword());
-        UserEntity userEntity = UserEntity.builder()
+        UsersEntity userEntity = UsersEntity.builder()
                                           .email(reqRegisterDto.getEmail())
                                           .password(encryptedPw)
                                           .username(reqRegisterDto.getUsername())
@@ -68,14 +68,14 @@ public class UserService {
         Claims principal = (Claims) jwtCustomToken.getPrincipal();
         String credentials = jwtCustomToken.getCredentials();
         Long userUid = this.jwtUtility.getUserUid(principal);
-        UserEntity userEntity = this.userRepository.findById(userUid)
+        UsersEntity usersEntity = this.userRepository.findById(userUid)
                                                    .orElseThrow(() -> new Exception("no exist user."));
         return UserDto.builder()
-                      .email(userEntity.getEmail())
+                      .email(usersEntity.getEmail())
                       .token(credentials)
-                      .username(userEntity.getUsername())
-                      .bio(userEntity.getBio())
-                      .image(userEntity.getImage())
+                      .username(usersEntity.getUsername())
+                      .bio(usersEntity.getBio())
+                      .image(usersEntity.getImage())
                       .build();
     }
 }
