@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.List;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import springboot.configs.CustomProperties;
@@ -28,14 +27,10 @@ public class JwtCustomProvider implements AuthenticationProvider {
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) throws JwtException {
         Claims claims;
         String token = (String) authentication.getDetails();
-        try {
-            claims = this.jwtUtility.jwtParse(token);
-        } catch (JwtException jwtException) {
-            throw new SecurityException("error test", jwtException);
-        }
+        claims = this.jwtUtility.jwtParse(token);
         return new JwtCustomToken(claims, token, this.createGrantedAuthorities(claims));
     }
 

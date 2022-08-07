@@ -1,23 +1,27 @@
 # MySQL
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-# DB Source URL
-spring.datasource.url=jdbc:mysql://localhost:23306/test
-# DB username
-spring.datasource.username=root
-# DB password
-spring.datasource.password=ibjang123
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:23306/realworld
+    username: root
+    password: ibjang123
 # Debug SQL query
-spring.jpa.show-sql=true
-# spring.jpa.hibernate.ddl-auto=update
-spring.jpa.properties.hibernate.format_sql=true
+  jpa:
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+    hibernate:
+      ddl-auto: update
 # Base Url
-server.servlet.context-path=/api
+server:
+  servlet:
+    context-path: /api
 
-spring.jpa.hibernate.ddl-auto=update
 # Jwt Secret Key
-custom.jwt-secret-key=4c6eb9803591a5f57292a9c6f11b975aeaab1855081eae8cadfb0a51e4a9a0a698ff54740886661770f8175ecb189ddc8de557dfffcb4fb9bfe01e80d2a5c955
-custom.jwt-role=USER
-custom.security-role=ROLE
-custom.basic-role=PARTNER
-custom.basic-user=hiparking
-custom.basic-password=inbeom123
+custom:
+  jwt-secret-key: 4c6eb9803591a5f57292a9c6f11b975aeaab1855081eae8cadfb0a51e4a9a0a698ff54740886661770f8175ecb189ddc8de557dfffcb4fb9bfe01e80d2a5c955
+  jwt-role: USER
+  security-role: ROLE
+  basic-role: PARTNER
+  basic-user: hiparking
+  basic-password: inbeom123

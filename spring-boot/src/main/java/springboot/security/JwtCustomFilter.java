@@ -5,12 +5,15 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import springboot.exceptions.JwtCustomException;
 
 @RequiredArgsConstructor
 public class JwtCustomFilter extends OncePerRequestFilter {
@@ -28,8 +31,9 @@ public class JwtCustomFilter extends OncePerRequestFilter {
                 Authentication authentication = authenticationManager.authenticate(new JwtCustomToken(jwtToken));
                 SecurityContextHolder.getContext()
                                      .setAuthentication(authentication);
-            } catch (AuthenticationException authenticationException) {
-                SecurityContextHolder.clearContext();
+            } catch (JwtException jwtException) {
+                System.out.println(jwtException.getMessage());
+                throw new JwtCustomException("Error!!!");
             }
         }
         filterChain.doFilter(request, response);

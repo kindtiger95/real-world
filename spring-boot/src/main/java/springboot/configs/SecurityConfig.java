@@ -53,27 +53,17 @@ public class SecurityConfig {
             .and()
             .addFilterAfter(new JwtCustomFilter(http.getSharedObject(AuthenticationManager.class)), WebAsyncManagerIntegrationFilter.class)
             //            .addFilterAfter(new JwtCustomFilter(this.authenticationManagerBuilder.getOrBuild()), WebAsyncManagerIntegrationFilter.class)
-            .httpBasic()
-            .and()
-            .requestCache()
-            .disable()
-            .securityContext()
-            .disable()
-            .sessionManagement()
-            .disable()
-            .exceptionHandling()
-            .disable()
-            .formLogin()
-            .disable()
-            .logout()
-            .disable()
-            .headers()
-            .disable();
-        //            .httpBasic()
-        //            .disable()
-        //            .anonymous()
-        //            .disable();
+            .httpBasic().and()
+            .requestCache().disable()
+            .securityContext().disable()
+            .sessionManagement().disable()
+            .formLogin().disable()
+            .logout().disable()
+            .headers().disable();
 
+        //  .exceptionHandling().disable();
+        //  .httpBasic().disable();
+        //  .anonymous().disable();
         return http.build();
     }
 }
