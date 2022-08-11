@@ -8,10 +8,12 @@ import java.util.Collection;
 import java.util.List;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import springboot.configs.CustomProperties;
 import springboot.database.repositories.UserRepository;
+import springboot.exceptions.JwtCustomException;
 
 @Component
 public class JwtCustomProvider implements AuthenticationProvider {
@@ -27,10 +29,14 @@ public class JwtCustomProvider implements AuthenticationProvider {
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws JwtException {
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Claims claims;
         String token = (String) authentication.getDetails();
-        claims = this.jwtUtility.jwtParse(token);
+        try {
+            claims = this.jwtUtility.jwtParse(token);
+        } catch (JwtException jwtException) {
+            throw new JwtCustomException("토큰 유효하지 않음");
+        }
         return new JwtCustomToken(claims, token, this.createGrantedAuthorities(claims));
     }
 
