@@ -1,4 +1,4 @@
-package springboot.exceptions;
+package springboot.common.enums;
 
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package springboot.database.entities;
+package springboot.domain.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -21,8 +21,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Builder
 @AllArgsConstructor
 @Entity(name = "Comments")
-public class CommentsEntity {
-    public CommentsEntity() {}
+public class CommentEntity {
+    public CommentEntity() {}
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uid;
@@ -32,11 +32,11 @@ public class CommentsEntity {
 
     @ManyToOne
     @JoinColumn(name = "article_uid")
-    private ArticlesEntity articlesEntity;
+    private ArticleEntity articleEntity;
 
     @ManyToOne
     @JoinColumn(name = "user_uid")
-    private UsersEntity usersEntity;
+    private UserEntity userEntity;
 
     @CreationTimestamp
     @Column(name = "created_at")

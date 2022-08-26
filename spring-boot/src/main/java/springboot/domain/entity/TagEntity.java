@@ -1,4 +1,4 @@
-package springboot.database.entities;
+package springboot.domain.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -6,8 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,20 +17,14 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Setter
 @Builder
 @AllArgsConstructor
-@Entity(name = "Favorites")
-public class FavoritesEntity {
-    public FavoritesEntity() {}
+@Entity(name = "Tags")
+public class TagEntity {
+    public TagEntity() {}
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uid;
 
-    @ManyToOne
-    @JoinColumn(name = "article_uid")
-    private ArticlesEntity articlesEntity;
-
-    @ManyToOne
-    @JoinColumn(name = "user_uid")
-    private UsersEntity usersEntity;
+    private String tag;
 
     @CreationTimestamp
     @Column(name = "created_at")

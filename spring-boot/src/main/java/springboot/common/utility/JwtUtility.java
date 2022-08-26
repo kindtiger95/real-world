@@ -1,4 +1,4 @@
-package springboot.security;
+package springboot.common.utility;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -7,12 +7,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
-import springboot.configs.CustomProperties;
+import springboot.config.ConfigProvider;
 
 @Component
 public class JwtUtility {
@@ -25,10 +24,10 @@ public class JwtUtility {
     private final List<String> jwtRoles;
     private final String securityRole;
 
-    public JwtUtility(CustomProperties customProperties) {
-        String rawSecretKey = customProperties.getJwtSecretKey();
-        this.jwtRoles = new ArrayList<>(Collections.singletonList(customProperties.getJwtRole()));
-        this.securityRole = customProperties.getSecurityRole();
+    public JwtUtility(ConfigProvider configProvider) {
+        String rawSecretKey = configProvider.getJwtSecretKey();
+        this.jwtRoles = new ArrayList<>(Collections.singletonList(configProvider.getJwtRole()));
+        this.securityRole = configProvider.getSecurityRole();
         this.signKey = Keys.hmacShaKeyFor(rawSecretKey.getBytes(StandardCharsets.UTF_8));
         this.jwtParser = Jwts.parserBuilder()
                              .setSigningKey(this.signKey)

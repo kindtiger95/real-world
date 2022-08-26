@@ -1,4 +1,4 @@
-package springboot.controllers.dto;
+package springboot.domain.dto.request;
 
 import static com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
@@ -18,7 +18,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @JsonTypeName("user")
 @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
-public class UserDto {
+public class UserRequest {
 
     private String email;
     private String token;
@@ -30,7 +30,7 @@ public class UserDto {
     @ToString
     @JsonTypeName("user")
     @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
-    public static class ReqLoginDto {
+    public static class ReqLogin {
 
         private String email;
 
@@ -41,7 +41,7 @@ public class UserDto {
     @ToString
     @JsonTypeName("user")
     @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
-    public static class ReqRegisterDto {
+    public static class ReqRegister {
 
         private String username;
 
@@ -54,7 +54,7 @@ public class UserDto {
     @ToString
     @JsonTypeName("user")
     @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
-    public static class ReqUpdateDto {
+    public static class ReqUpdate {
 
         private String email;
 

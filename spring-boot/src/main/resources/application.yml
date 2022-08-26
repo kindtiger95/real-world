@@ -12,6 +12,7 @@ spring:
       hibernate.format_sql: true
     hibernate:
       ddl-auto: update
+    open-in-view: off
 # Base Url
 server:
   servlet:

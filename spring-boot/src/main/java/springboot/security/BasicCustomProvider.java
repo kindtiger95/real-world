@@ -1,27 +1,25 @@
 package springboot.security;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Component;
-import springboot.configs.CustomProperties;
+import springboot.config.ConfigProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Deprecated
 public class BasicCustomProvider implements AuthenticationProvider {
     private final String username;
     private final String password;
     private final String role;
 
-    BasicCustomProvider(CustomProperties customProperties) {
-        this.username = customProperties.getBasicUser();
-        this.password = customProperties.getBasicPassword();
-        this.role = customProperties.getBasicRole();
+    BasicCustomProvider(ConfigProvider configProvider) {
+        this.username = configProvider.getBasicUser();
+        this.password = configProvider.getBasicPassword();
+        this.role = configProvider.getBasicRole();
     }
 
     @Override

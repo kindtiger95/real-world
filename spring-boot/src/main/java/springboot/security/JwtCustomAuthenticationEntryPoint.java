@@ -1,10 +1,10 @@
-package springboot.exceptions;
+package springboot.security;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import springboot.domains.response.ResponseAuthorization;
+import springboot.common.enums.ErrorCode;
+import springboot.domain.dto.response.AuthResponse;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,10 +27,10 @@ public class JwtCustomAuthenticationEntryPoint implements AuthenticationEntryPoi
     private void setResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(errorCode.getHttpCode());
-        ResponseAuthorization responseAuthorization = ResponseAuthorization.builder()
-                                                                           .code(errorCode.getCode())
-                                                                           .message(errorCode.getMessage())
-                                                                           .build();
+        AuthResponse responseAuthorization = AuthResponse.builder()
+                                                         .code(errorCode.getCode())
+                                                         .message(errorCode.getMessage())
+                                                         .build();
         String json = this.objectMapper.writeValueAsString(responseAuthorization);
         response.getWriter()
                 .print(json);

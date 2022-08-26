@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import springboot.exceptions.ErrorCode;
+import springboot.common.enums.ErrorCode;
 
 @RequiredArgsConstructor
 public class JwtCustomFilter extends OncePerRequestFilter {

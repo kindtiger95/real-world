@@ -1,4 +1,4 @@
-package springboot.database.entities;
+package springboot.domain.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,34 +18,17 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@Entity(name = "Articles")
-public class ArticlesEntity {
-    public ArticlesEntity() {}
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long uid;
+@Entity
+@Table(name = "article")
+public class ArticleEntity extends BaseEntity {
 
     private String slug;
-
     private String title;
-
     private String description;
-
     @Lob
     private String body;
 
     @ManyToOne
     @JoinColumn(name = "user_uid")
-    private UsersEntity usersEntity;
-
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private UserEntity userEntity;
 }

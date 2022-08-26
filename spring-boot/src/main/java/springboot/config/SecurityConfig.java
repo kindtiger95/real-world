@@ -1,6 +1,5 @@
-package springboot.configs;
+package springboot.config;
 
-import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,8 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
-import springboot.exceptions.JwtCustomAuthenticationEntryPoint;
-import springboot.security.BasicCustomProvider;
+import springboot.security.JwtCustomAuthenticationEntryPoint;
 import springboot.security.JwtCustomFilter;
 import springboot.security.JwtCustomProvider;
 
@@ -19,19 +17,17 @@ import springboot.security.JwtCustomProvider;
 public class SecurityConfig {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final CustomProperties customProperties;
+    private final ConfigProvider configProvider;
 
     @Autowired
     public SecurityConfig(
         AuthenticationManagerBuilder authenticationManagerBuilder,
         JwtCustomProvider jwtCustomProvider,
-        BasicCustomProvider basicCustomProvider,
-        CustomProperties customProperties
+        ConfigProvider configProvider
     ) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
-        this.customProperties = customProperties;
+        this.configProvider = configProvider;
         authenticationManagerBuilder.authenticationProvider(jwtCustomProvider);
-        authenticationManagerBuilder.authenticationProvider(basicCustomProvider);
     }
 
     @Bean
@@ -46,9 +42,9 @@ public class SecurityConfig {
             .disable()
             .authorizeRequests()
             .antMatchers("/user/**")
-            .hasAnyAuthority(customProperties.getJwtRole())
+            .hasAnyAuthority(configProvider.getJwtRole())
             .antMatchers("/check/**")
-            .hasAnyAuthority(customProperties.getBasicRole())
+            .hasAnyAuthority(configProvider.getBasicRole())
             .antMatchers("/users/**")
             .permitAll()
             .and()
