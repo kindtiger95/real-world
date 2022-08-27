@@ -14,15 +14,15 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "follow")
+@Table(name = "article_tag")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FollowEntity extends BaseEntity {
+public class ArticleTagEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "follower_id")
-    private UserEntity followerEntity;
+    @JoinColumn(name = "article_id")
+    ArticleEntity articleEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "followee_id")
-    private UserEntity followeeEntity;
+    @JoinColumn(name = "tag_id")
+    TagEntity tagEntity;
 }

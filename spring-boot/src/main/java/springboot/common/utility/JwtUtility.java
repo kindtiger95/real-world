@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import springboot.config.ConfigProvider;
 
@@ -24,6 +25,7 @@ public class JwtUtility {
     private final List<String> jwtRoles;
     private final String securityRole;
 
+    @Autowired
     public JwtUtility(ConfigProvider configProvider) {
         String rawSecretKey = configProvider.getJwtSecretKey();
         this.jwtRoles = new ArrayList<>(Collections.singletonList(configProvider.getJwtRole()));

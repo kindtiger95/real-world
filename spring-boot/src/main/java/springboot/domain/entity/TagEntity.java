@@ -1,36 +1,25 @@
 package springboot.domain.entity;
 
-import java.time.LocalDateTime;
-import javax.persistence.Column;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@Entity(name = "Tags")
-public class TagEntity {
-    public TagEntity() {}
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long uid;
+@Entity
+@Table(name = "tag")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class TagEntity extends BaseEntity {
 
     private String tag;
 
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @OneToMany(mappedBy = "tagEntity")
+    List<ArticleTagEntity> articleTagEntities = new ArrayList<>();
 }
