@@ -11,7 +11,7 @@ import lombok.Getter;
 @Getter
 @JsonTypeName("user")
 @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
-public class UserRes {
+public class UserResDto {
     private String email;
     private String token;
     private String username;

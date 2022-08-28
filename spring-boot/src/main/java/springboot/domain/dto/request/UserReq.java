@@ -15,7 +15,7 @@ public class UserReq {
     @Getter
     @JsonTypeName("user")
     @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
-    public static class Login {
+    public static class LoginDto {
         @NotNull private String email;
         @NotNull private String password;
     }
@@ -24,7 +24,7 @@ public class UserReq {
     @Getter
     @JsonTypeName("user")
     @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
-    public static class Register {
+    public static class RegisterDto {
         @NotNull private String username;
         @NotNull private String email;
         @NotNull private String password;
@@ -34,7 +34,7 @@ public class UserReq {
     @Getter
     @JsonTypeName("user")
     @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
-    public static class Update {
+    public static class UpdateDto {
         private String email;
         private String bio;
         private String image;

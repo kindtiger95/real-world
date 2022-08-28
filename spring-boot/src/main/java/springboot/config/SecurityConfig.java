@@ -9,7 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
-import springboot.security.JwtCustomAuthenticationEntryPoint;
+import springboot.security.CustomAccessDeniedHandler;
+import springboot.security.CustomAuthenticationEntryPoint;
 import springboot.security.JwtCustomFilter;
 import springboot.security.JwtCustomProvider;
 
@@ -57,8 +58,8 @@ public class SecurityConfig {
             .formLogin().disable()
             .logout().disable()
             .headers().disable()
-            .exceptionHandling().authenticationEntryPoint(new JwtCustomAuthenticationEntryPoint());
-
+            .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                                .accessDeniedHandler(new CustomAccessDeniedHandler());
         //  .exceptionHandling().disable();
         //  .httpBasic().disable();
         //  .anonymous().disable();
