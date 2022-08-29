@@ -30,23 +30,11 @@ public class UserController {
 
     @GetMapping("/user")
     public UserResDto getUserPrivateInfo() {
-//        Authentication authentication = SecurityContextHolder.getContext()
-//                                                             .getAuthentication();
-        return UserResDto.builder()
-                         .username("test1")
-                         .email("a@a.com")
-                         .image("test")
-                         .token("test244")
-                         .build();
+        return this.userService.getCurrentUser();
     }
 
     @PutMapping("/user")
     public UserResDto updateUserInfo(@RequestBody @Validated UpdateDto updateDto) {
-        return UserResDto.builder()
-                         .username("test1")
-                         .email("a@a.com")
-                         .image("test")
-                         .token("test244")
-                         .build();
+        return this.userService.updateUserInfo(updateDto);
     }
 }

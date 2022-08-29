@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 public class UserReq {
-
     @ToString
     @Getter
     @JsonTypeName("user")
@@ -25,8 +24,8 @@ public class UserReq {
     @JsonTypeName("user")
     @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
     public static class RegisterDto {
-        @NotNull private String username;
         @NotNull private String email;
+        @NotNull private String username;
         @NotNull private String password;
     }
 
@@ -38,5 +37,7 @@ public class UserReq {
         private String email;
         private String bio;
         private String image;
+        private String username;
+        private String password;
     }
 }

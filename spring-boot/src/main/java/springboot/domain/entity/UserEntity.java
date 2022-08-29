@@ -35,6 +35,24 @@ public class UserEntity extends BaseEntity {
     private String bio;
     private String image;
 
+    public void changeUserInfo(String email, String username, String password, String bio, String image) {
+        if (email != null && !email.isEmpty()) {
+            this.email = email;
+        }
+        if (username != null && !username.isEmpty()) {
+            this.username = username;
+        }
+        if (password != null && !password.isEmpty()) {
+            this.password = password;
+        }
+        if (bio != null && !bio.isEmpty()) {
+            this.bio = bio;
+        }
+        if (image != null && !image.isEmpty()) {
+            this.image = image;
+        }
+    }
+
     @Builder.Default
     @OneToMany(mappedBy = "followerEntity")
     List<FollowEntity> followerEntity = new ArrayList<>();

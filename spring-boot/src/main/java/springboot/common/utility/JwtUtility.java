@@ -22,13 +22,13 @@ public class JwtUtility {
 
     private final String userUid = "userUid";
     private final String userName = "userName";
-    private final List<String> jwtRoles;
+    private final String jwtRoles;
     private final String securityRole;
 
     @Autowired
     public JwtUtility(ConfigProvider configProvider) {
         String rawSecretKey = configProvider.getJwtSecretKey();
-        this.jwtRoles = new ArrayList<>(Collections.singletonList(configProvider.getJwtRole()));
+        this.jwtRoles = configProvider.getJwtRole();
         this.securityRole = configProvider.getSecurityRole();
         this.signKey = Keys.hmacShaKeyFor(rawSecretKey.getBytes(StandardCharsets.UTF_8));
         this.jwtParser = Jwts.parserBuilder()
@@ -43,7 +43,7 @@ public class JwtUtility {
 
     public String jwtSign(Long userUid, String userName) {
         return Jwts.builder()
-                   .claim(this.userUid, String.valueOf(userUid))
+                   .claim(this.userUid, userUid)
                    .claim(this.userName, userName)
                    .claim(this.securityRole, this.jwtRoles)
                    .signWith(this.signKey)

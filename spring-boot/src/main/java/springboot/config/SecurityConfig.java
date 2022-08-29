@@ -43,15 +43,15 @@ public class SecurityConfig {
             .disable()
             .authorizeRequests()
             .antMatchers("/user/**")
-            .hasAnyAuthority(configProvider.getJwtRole())
+            .hasAuthority(configProvider.getJwtRole())
             .antMatchers("/check/**")
-            .hasAnyAuthority(configProvider.getBasicRole())
+            .hasAuthority(configProvider.getBasicRole())
             .antMatchers("/users/**")
             .permitAll()
             .and()
             .addFilterAfter(new JwtCustomFilter(http.getSharedObject(AuthenticationManager.class)), WebAsyncManagerIntegrationFilter.class)
             //            .addFilterAfter(new JwtCustomFilter(this.authenticationManagerBuilder.getOrBuild()), WebAsyncManagerIntegrationFilter.class)
-            .httpBasic().and()
+            .httpBasic().disable()
             .requestCache().disable()
             .securityContext().disable()
             .sessionManagement().disable()
@@ -61,7 +61,6 @@ public class SecurityConfig {
             .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                                 .accessDeniedHandler(new CustomAccessDeniedHandler());
         //  .exceptionHandling().disable();
-        //  .httpBasic().disable();
         //  .anonymous().disable();
         return http.build();
     }
