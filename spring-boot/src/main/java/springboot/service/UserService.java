@@ -1,9 +1,7 @@
 package springboot.service;
 
-import io.jsonwebtoken.Claims;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +12,6 @@ import springboot.domain.dto.request.UserReq.UpdateDto;
 import springboot.domain.dto.response.UserResDto;
 import springboot.domain.entity.UserEntity;
 import springboot.repository.UserRepository;
-import springboot.security.JwtCustomToken;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,6 +19,7 @@ import springboot.security.JwtCustomToken;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final LookupService lookupService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtUtility jwtUtility;
 
@@ -58,14 +56,16 @@ public class UserService {
     }
 
     public UserResDto getCurrentUser() {
-        UserEntity currentUserEntity = this.getCurrentUserEntity();
+        UserEntity currentUserEntity = this.lookupService.getCurrentUserEntity()
+                                                         .orElseThrow(() -> new RuntimeException("Authentication 없음"));
         String token = this.jwtUtility.jwtSign(currentUserEntity.getUid(), currentUserEntity.getUsername());
         return getUserResDto(currentUserEntity, token);
     }
 
     @Transactional
     public UserResDto updateUserInfo(UpdateDto updateDto) {
-        UserEntity currentUserEntity = this.getCurrentUserEntity();
+        UserEntity currentUserEntity = this.lookupService.getCurrentUserEntity()
+                                                         .orElseThrow(() -> new RuntimeException("Authentication 없음"));
         String password = "";
         if (!updateDto.getPassword()
                       .isEmpty()) {
@@ -75,22 +75,6 @@ public class UserService {
             updateDto.getBio(), updateDto.getImage());
         String token = this.jwtUtility.jwtSign(currentUserEntity.getUid(), currentUserEntity.getUsername());
         return this.getUserResDto(currentUserEntity, token);
-    }
-
-    private UserEntity getCurrentUserEntity() {
-        JwtCustomToken authentication = (JwtCustomToken) SecurityContextHolder.getContext()
-                                                                              .getAuthentication();
-        Claims claims = authentication.getPrincipal();
-        Integer userUid = (Integer) claims.get("userUid");
-        String userName = (String) claims.get("userName");
-
-        UserEntity userEntity = this.userRepository.findById(Long.valueOf(userUid))
-                                                   .orElseThrow(() -> new RuntimeException("등록되지 않은 유저입니다."));
-        if (!userEntity.getUsername()
-                       .equals(userName)) {
-            throw new RuntimeException("유저 정보가 일치하지 않습니다.");
-        }
-        return userEntity;
     }
 
     private UserResDto getUserResDto(UserEntity currentUserEntity, String token) {
