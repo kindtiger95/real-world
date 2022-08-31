@@ -12,10 +12,11 @@ import springboot.domain.dto.response.ProfileResDto;
 @RestController
 @RequiredArgsConstructor
 public class ProfileController {
-    /*@GetMapping("/profiles/{username}")
+    /*
+    @GetMapping("/profiles/{username}")
     public ProfileResDto getUserProfile(@PathVariable String username) {
 
-    }*/
+    }
 
     @PostMapping("/profiles/{username}/follow")
     public ProfileResDto followUser(@PathVariable String username) {
@@ -26,4 +27,5 @@ public class ProfileController {
     public ProfileResDto unFollowUser(@PathVariable String username) {
 
     }
+     */
 }

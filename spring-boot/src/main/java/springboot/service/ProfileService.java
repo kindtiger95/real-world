@@ -39,6 +39,4 @@ public class ProfileService {
                                 .build()
         }
     }*/
-
-    public ProfileResDto followingUser(ProfileReq)
 }

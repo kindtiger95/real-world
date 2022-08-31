@@ -1,6 +1,8 @@
 package springboot.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import springboot.common.enums.ErrorCode;
@@ -16,7 +18,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+        AuthenticationException authException) throws IOException, ServletException {
         String exception = (String) request.getAttribute("exception");
         ErrorCode unauthorized = ErrorCode.UNAUTHORIZED;
         if (exception.equals(unauthorized.getCode())) {
@@ -28,8 +31,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(errorCode.getHttpCode());
         AuthResDto responseAuthorization = AuthResDto.builder()
-                                                     .code(errorCode.getCode())
-                                                     .message(errorCode.getMessage())
+                                                     .body(new ArrayList<>(List.of("Authentication failed.")))
                                                      .build();
         String json = this.objectMapper.writeValueAsString(responseAuthorization);
         response.getWriter()
