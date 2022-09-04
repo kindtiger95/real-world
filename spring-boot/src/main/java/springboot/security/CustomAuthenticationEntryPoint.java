@@ -1,17 +1,16 @@
 package springboot.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import springboot.common.enums.ErrorCode;
-import springboot.domain.dto.response.AuthResDto;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import springboot.common.enums.ErrorCode;
+import springboot.domain.dto.AuthDto;
 
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
@@ -30,9 +29,9 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     private void setResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(errorCode.getHttpCode());
-        AuthResDto responseAuthorization = AuthResDto.builder()
-                                                     .body(new ArrayList<>(List.of("Authentication failed.")))
-                                                     .build();
+        AuthDto responseAuthorization = AuthDto.builder()
+                                               .body(new ArrayList<>(List.of("Authentication failed.")))
+                                               .build();
         String json = this.objectMapper.writeValueAsString(responseAuthorization);
         response.getWriter()
                 .print(json);

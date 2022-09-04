@@ -6,10 +6,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.common.utility.JwtUtility;
-import springboot.domain.dto.request.UserReq.LoginDto;
-import springboot.domain.dto.request.UserReq.RegisterDto;
-import springboot.domain.dto.request.UserReq.UpdateDto;
-import springboot.domain.dto.response.UserResDto;
+import springboot.domain.dto.UserDto.LoginDto;
+import springboot.domain.dto.UserDto.RegisterDto;
+import springboot.domain.dto.UserDto.UpdateDto;
+import springboot.domain.dto.UserDto.UserResDto;
 import springboot.domain.entity.UserEntity;
 import springboot.repository.UserRepository;
 
@@ -38,8 +38,8 @@ public class UserService {
 
     @Transactional
     public UserResDto registerProcessing(RegisterDto registerDto) {
-        Optional<UserEntity> userFinded = this.userRepository.findByEmail(registerDto.getEmail());
-        if (userFinded.isPresent()) {
+        Optional<UserEntity> userFined = this.userRepository.findByEmail(registerDto.getEmail());
+        if (userFined.isPresent()) {
             throw new RuntimeException("이미 등록된 이메일입니다.");
         }
 

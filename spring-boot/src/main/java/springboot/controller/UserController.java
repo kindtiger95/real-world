@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import springboot.domain.dto.request.UserReq.LoginDto;
-import springboot.domain.dto.request.UserReq.RegisterDto;
-import springboot.domain.dto.request.UserReq.UpdateDto;
-import springboot.domain.dto.response.UserResDto;
+import springboot.domain.dto.UserDto.LoginDto;
+import springboot.domain.dto.UserDto.RegisterDto;
+import springboot.domain.dto.UserDto.UpdateDto;
+import springboot.domain.dto.UserDto.UserResDto;
 import springboot.service.UserService;
 
 @RestController

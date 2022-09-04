@@ -14,7 +14,7 @@ import springboot.security.CustomAuthenticationEntryPoint;
 import springboot.security.JwtCustomFilter;
 import springboot.security.JwtCustomProvider;
 
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 public class SecurityConfig {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;

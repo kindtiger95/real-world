@@ -14,11 +14,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @Table(name = "article")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ArticleEntity extends BaseEntity {
@@ -45,6 +49,19 @@ public class ArticleEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "articleEntity")
     private List<ArticleTagEntity> articleTagEntities = new ArrayList<>();
+
+    public void updateTitleAndSlug(String title, String slug) {
+        this.slug = slug;
+        this.title = title;
+    }
+
+    public void updateArticle(String description, String body) {
+        if (description != null)
+            this.description = description;
+
+        if (body != null)
+            this.body = body;
+    }
 }
 
 
