@@ -7,7 +7,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springboot.domain.dto.ArticleDto.CreateArticleReqDto;
@@ -16,8 +15,10 @@ import springboot.domain.dto.ArticleDto.SingleArticleResDto;
 import springboot.domain.dto.ArticleDto.UpdateArticleReqDto;
 import springboot.domain.dto.ProfileDto;
 import springboot.domain.entity.ArticleEntity;
+import springboot.domain.entity.FavoriteEntity;
 import springboot.domain.entity.UserEntity;
 import springboot.repository.ArticleRepository;
+import springboot.repository.FollowRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,6 +26,7 @@ import springboot.repository.ArticleRepository;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final FollowRepository followRepository;
     private final LookupService lookupService;
     private final TagService tagService;
 
@@ -110,12 +112,63 @@ public class ArticleService {
 
     public MultipleArticleResDto getArticle(String author, String tag, String favorited, Integer limit,
         Integer offset) {
+        if (author != null) {
+            return this.getArticleByAuthor(author, limit, offset);
+        }
+        return null;
+    }
+
+    private MultipleArticleResDto getArticleByAuthor(String author, Integer limit, Integer offset) {
+/*        Optional<UserEntity> currentUserEntity = this.lookupService.getCurrentUserEntity();
+
         PageRequest pageRequest = PageRequest.of(offset, limit);
         Page<ArticleEntity> articles = this.articleRepository.getArticle(author, pageRequest);
         List<ArticleEntity> content = articles.getContent();
+        List<SingleArticleResDto> singleArticleResDtoList = new ArrayList<>();
         content.forEach(articleEntity -> {
-            articleEntity.getArticleTagEntities().for
+            UserEntity userEntity = articleEntity.getUserEntity();
+            List<String> tagList = new ArrayList<>();
+            articleEntity.getArticleTagEntities().forEach(articleTagEntity -> {
+                tagList.add(articleTagEntity.getTagEntity().getTag());
+            });
+
+            boolean isFavorite = false;
+            boolean isFollow = false;
+            if (currentUserEntity.isPresent()) {
+                if (this.followRepository.findExistFollow(userEntity.getUid(), currentUserEntity.get().getUid()).isPresent())
+                    isFollow = true;
+                for (FavoriteEntity favoriteEntity : articleEntity.getFavoriteEntities()) {
+                    if (favoriteEntity.getUserEntity().getUid().longValue() == currentUserEntity.get().getUid().longValue()) {
+                        isFavorite = true;
+                        break;
+                    }
+                }
+            }
+
+            SingleArticleResDto singleArticleResDto = SingleArticleResDto.builder()
+                                                                         .slug(articleEntity.getSlug())
+                                                                         .title(articleEntity.getTitle())
+                                                                         .description(articleEntity.getDescription())
+                                                                         .body(articleEntity.getBody())
+                                                                         .tagList(tagList)
+                                                                         .createdAt(articleEntity.getCreatedAt().toString())
+                                                                         .updatedAt(articleEntity.getCreatedAt().toString())
+                                                                         .favorite(isFavorite)
+                                                                         .favoritesCount(articleEntity.getFavoriteEntities().size())
+                                                                         .author(ProfileDto.builder()
+                                                                                           .username(userEntity.getUsername())
+                                                                                           .bio(userEntity.getBio())
+                                                                                           .image(userEntity.getBio())
+                                                                                           .following(isFollow)
+                                                                                           .build())
+                                                                         .build();
+            singleArticleResDtoList.add(singleArticleResDto);
         });
+        return MultipleArticleResDto.builder()
+                                    .articles(singleArticleResDtoList)
+                                    .articlesCount(singleArticleResDtoList.size())
+                                    .build();*/
+        return null;
     }
 
     private ProfileDto createProfileDto(UserEntity userEntity) {

@@ -36,10 +36,13 @@ public class ArticleController {
     MultipleArticleResDto getArticles(@RequestParam(value = "tag", required = false) String tag,
         @RequestParam(value = "author", required = false) String author, @RequestParam(value = "favorited", required = false) String favorited,
         @RequestParam(value = "limit", required = false) Integer limit, @RequestParam(value = "offset", required = false) Integer offset) {
+
         if (limit == null)
             limit = 20;
+
         if (offset == null)
             offset = 0;
-        return null;
+
+        return this.articleService.getArticle(author, tag, favorited, limit, offset);
     }
 }
