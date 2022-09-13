@@ -7,15 +7,16 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.domain.dto.ArticleDto.AuthorDto;
 import springboot.domain.dto.ArticleDto.CreateArticleReqDto;
 import springboot.domain.dto.ArticleDto.MultipleArticleResDto;
 import springboot.domain.dto.ArticleDto.SingleArticleResDto;
 import springboot.domain.dto.ArticleDto.UpdateArticleReqDto;
 import springboot.domain.dto.ProfileDto;
 import springboot.domain.entity.ArticleEntity;
-import springboot.domain.entity.FavoriteEntity;
 import springboot.domain.entity.UserEntity;
 import springboot.repository.ArticleRepository;
 import springboot.repository.FollowRepository;
@@ -46,7 +47,7 @@ public class ArticleService {
         this.articleRepository.save(articleEntity);
         this.tagService.createTag(createArticleReqDto.getTagList(), articleEntity);
 
-        ProfileDto profileDto = createProfileDto(userEntity);
+        AuthorDto authorDto = createAuthorDto(userEntity);
         return SingleArticleResDto.builder()
                                   .slug(slug)
                                   .title(articleEntity.getTitle())
@@ -59,7 +60,7 @@ public class ArticleService {
                                                           .toString())
                                   .favorite(false)
                                   .favoritesCount(0)
-                                  .author(profileDto)
+                                  .author(authorDto)
                                   .build();
     }
 
@@ -93,7 +94,7 @@ public class ArticleService {
                                                      .getTag());
                      });
 
-        ProfileDto profileDto = createProfileDto(userEntity);
+        AuthorDto authorDto = createAuthorDto(userEntity);
         return SingleArticleResDto.builder()
                                   .slug(slug)
                                   .title(articleEntity.getTitle())
@@ -106,73 +107,72 @@ public class ArticleService {
                                                           .toString())
                                   .favorite(false)
                                   .favoritesCount(0)
-                                  .author(profileDto)
+                                  .author(authorDto)
                                   .build();
     }
 
-    public MultipleArticleResDto getArticle(String author, String tag, String favorited, Integer limit,
-        Integer offset) {
+    public MultipleArticleResDto getArticle(String author, String tag, String favorited, Integer limit, Integer offset) {
         if (author != null) {
             return this.getArticleByAuthor(author, limit, offset);
         }
         return null;
     }
 
+//    public MultipleArticleResDto getArticleFeed(Integer limit, Integer offset) {
+//        UserEntity userEntity = this.lookupService.getCurrentUserEntity()
+//                                                  .orElseThrow(() -> new RuntimeException("현재 유저를 찾을 수 없습니다."));
+//
+//
+//    }
+
     private MultipleArticleResDto getArticleByAuthor(String author, Integer limit, Integer offset) {
-/*        Optional<UserEntity> currentUserEntity = this.lookupService.getCurrentUserEntity();
-
-        PageRequest pageRequest = PageRequest.of(offset, limit);
-        Page<ArticleEntity> articles = this.articleRepository.getArticle(author, pageRequest);
-        List<ArticleEntity> content = articles.getContent();
-        List<SingleArticleResDto> singleArticleResDtoList = new ArrayList<>();
+        PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ArticleEntity> articleByAuthorPaging = this.articleRepository.findArticleByAuthorPaging(author, pageRequest);
+        List<ArticleEntity> content = articleByAuthorPaging.getContent();
+        Optional<UserEntity> currentUserEntityOpt = this.lookupService.getCurrentUserEntity();
+        MultipleArticleResDto multipleArticleResDto = new MultipleArticleResDto();
         content.forEach(articleEntity -> {
-            UserEntity userEntity = articleEntity.getUserEntity();
             List<String> tagList = new ArrayList<>();
-            articleEntity.getArticleTagEntities().forEach(articleTagEntity -> {
-                tagList.add(articleTagEntity.getTagEntity().getTag());
-            });
-
+            articleEntity.getArticleTagEntities()
+                         .forEach(articleTagEntity -> {
+                             tagList.add(articleTagEntity.getTagEntity()
+                                                         .getTag());
+                         });
             boolean isFavorite = false;
-            boolean isFollow = false;
-            if (currentUserEntity.isPresent()) {
-                if (this.followRepository.findExistFollow(userEntity.getUid(), currentUserEntity.get().getUid()).isPresent())
-                    isFollow = true;
-                for (FavoriteEntity favoriteEntity : articleEntity.getFavoriteEntities()) {
-                    if (favoriteEntity.getUserEntity().getUid().longValue() == currentUserEntity.get().getUid().longValue()) {
-                        isFavorite = true;
-                        break;
-                    }
-                }
+            if (currentUserEntityOpt.isPresent()) {
+                isFavorite = articleEntity.getFavoriteEntities()
+                                          .stream()
+                                          .anyMatch(favoriteEntity -> favoriteEntity.getUserEntity()
+                                                                                    .getUid()
+                                                                                    .longValue() == currentUserEntityOpt.get()
+                                                                                                                        .getUid()
+                                                                                                                        .longValue());
             }
 
+            AuthorDto authorDto = createAuthorDto(articleEntity.getUserEntity());
             SingleArticleResDto singleArticleResDto = SingleArticleResDto.builder()
-                                                                         .slug(articleEntity.getSlug())
-                                                                         .title(articleEntity.getTitle())
-                                                                         .description(articleEntity.getDescription())
-                                                                         .body(articleEntity.getBody())
-                                                                         .tagList(tagList)
-                                                                         .createdAt(articleEntity.getCreatedAt().toString())
-                                                                         .updatedAt(articleEntity.getCreatedAt().toString())
-                                                                         .favorite(isFavorite)
-                                                                         .favoritesCount(articleEntity.getFavoriteEntities().size())
-                                                                         .author(ProfileDto.builder()
-                                                                                           .username(userEntity.getUsername())
-                                                                                           .bio(userEntity.getBio())
-                                                                                           .image(userEntity.getBio())
-                                                                                           .following(isFollow)
-                                                                                           .build())
-                                                                         .build();
-            singleArticleResDtoList.add(singleArticleResDto);
+                                                           .slug(articleEntity.getSlug())
+                                                           .title(articleEntity.getTitle())
+                                                           .description(articleEntity.getDescription())
+                                                           .body(articleEntity.getBody())
+                                                           .tagList(tagList)
+                                                           .createdAt(articleEntity.getCreatedAt()
+                                                                                   .toString())
+                                                           .updatedAt(articleEntity.getUpdatedAt()
+                                                                                   .toString())
+                                                           .favorite(isFavorite)
+                                                           .favoritesCount(articleEntity.getFavoriteEntities()
+                                                                                        .size())
+                                                           .author(authorDto)
+                                                           .build();
+            multipleArticleResDto.getArticles().add(singleArticleResDto);
         });
-        return MultipleArticleResDto.builder()
-                                    .articles(singleArticleResDtoList)
-                                    .articlesCount(singleArticleResDtoList.size())
-                                    .build();*/
-        return null;
+        multipleArticleResDto.setArticlesCount(multipleArticleResDto.getArticles().size());
+        return multipleArticleResDto;
     }
 
-    private ProfileDto createProfileDto(UserEntity userEntity) {
-        return ProfileDto.builder()
+    private AuthorDto createAuthorDto(UserEntity userEntity) {
+        return AuthorDto.builder()
                          .username(userEntity.getUsername())
                          .bio(userEntity.getBio())
                          .image(userEntity.getImage())

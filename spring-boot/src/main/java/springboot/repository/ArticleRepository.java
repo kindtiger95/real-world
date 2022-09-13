@@ -18,8 +18,9 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
         + "WHERE a.slug = :slug")
     Optional<ArticleEntity> findBySlugUsingFetch(@Param("slug") String slug);
 
-    @Query("SELECT a FROM ArticleEntity AS a "
+    @Query(value = "SELECT DISTINCT a FROM ArticleEntity AS a "
         + "JOIN FETCH a.userEntity AS u "
-        + "WHERE u.username = :author ORDER BY a.createdAt DESC")
-    Page<ArticleEntity> getArticle(@Param("author") String author, Pageable pageable);
+        + "WHERE u.username = :author",
+        countQuery = "SELECT COUNT(u.username) FROM UserEntity AS u")
+    Page<ArticleEntity> findArticleByAuthorPaging(@Param("author") String author, Pageable pageable);
 }

@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 public class ArticleDto {
 
@@ -47,13 +49,22 @@ public class ArticleDto {
         private String updatedAt;
         private Boolean favorite;
         private Integer favoritesCount;
-        private ProfileDto author;
+        private AuthorDto author;
     }
 
     @Builder
     @Getter
+    public static class AuthorDto {
+        private String username;
+        private String bio;
+        private String image;
+        private Boolean following;
+    }
+
+    @Setter
+    @Getter
     public static class MultipleArticleResDto {
         private Integer articlesCount;
-        private List<SingleArticleResDto> articles;
+        private List<SingleArticleResDto> articles = new ArrayList<>();
     }
 }
