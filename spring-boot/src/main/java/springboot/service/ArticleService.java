@@ -15,10 +15,11 @@ import springboot.domain.dto.ArticleDto.CreateArticleReqDto;
 import springboot.domain.dto.ArticleDto.MultipleArticleResDto;
 import springboot.domain.dto.ArticleDto.SingleArticleResDto;
 import springboot.domain.dto.ArticleDto.UpdateArticleReqDto;
-import springboot.domain.dto.ProfileDto;
 import springboot.domain.entity.ArticleEntity;
 import springboot.domain.entity.UserEntity;
 import springboot.repository.ArticleRepository;
+import springboot.repository.ArticleTagRepository;
+import springboot.repository.FavoriteRepository;
 import springboot.repository.FollowRepository;
 
 @Service
@@ -28,6 +29,8 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
     private final FollowRepository followRepository;
+    private final ArticleTagRepository articleTagRepository;
+    private final FavoriteRepository favoriteRepository;
     private final LookupService lookupService;
     private final TagService tagService;
 
@@ -113,7 +116,7 @@ public class ArticleService {
 
     public MultipleArticleResDto getArticle(String author, String tag, String favorited, Integer limit, Integer offset) {
         if (author != null) {
-            return this.getArticleByAuthor(author, limit, offset);
+            return this.getArticleByAuthorSecond(author, limit, offset);
         }
         return null;
     }
@@ -125,7 +128,7 @@ public class ArticleService {
 //
 //    }
 
-    private MultipleArticleResDto getArticleByAuthor(String author, Integer limit, Integer offset) {
+    private MultipleArticleResDto getArticleByAuthorFirst(String author, Integer limit, Integer offset) {
         PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ArticleEntity> articleByAuthorPaging = this.articleRepository.findArticleByAuthorPaging(author, pageRequest);
         List<ArticleEntity> content = articleByAuthorPaging.getContent();
@@ -166,6 +169,48 @@ public class ArticleService {
                                                            .author(authorDto)
                                                            .build();
             multipleArticleResDto.getArticles().add(singleArticleResDto);
+        });
+        multipleArticleResDto.setArticlesCount(multipleArticleResDto.getArticles().size());
+        return multipleArticleResDto;
+    }
+
+    // 다른 방식으로 조회해보기
+    private MultipleArticleResDto getArticleByAuthorSecond(String author, Integer limit, Integer offset) {
+        PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ArticleEntity> articleByAuthorPaging = this.articleRepository.findArticleByAuthorPaging(author, pageRequest);
+        List<ArticleEntity> content = articleByAuthorPaging.getContent();
+        Optional<UserEntity> currentUserEntityOpt = this.lookupService.getCurrentUserEntity();
+        MultipleArticleResDto multipleArticleResDto = new MultipleArticleResDto();
+        content.forEach(articleEntity -> {
+            // 태그 조회
+            System.out.println("============start for each========");
+            List<String> tagList = new ArrayList<>();
+            this.articleTagRepository.findTag(articleEntity.getUid()).forEach(articleTagEntity -> {
+                tagList.add(articleTagEntity.getTagEntity().getTag());
+            });
+
+            System.out.println("============favorite repo query========");
+            boolean isFavorite = currentUserEntityOpt.isPresent() && this.favoriteRepository.findUsingUserId(currentUserEntityOpt.get().getUid())
+                                                                                            .isPresent();
+
+            AuthorDto authorDto = createAuthorDto(articleEntity.getUserEntity());
+            SingleArticleResDto singleArticleResDto = SingleArticleResDto.builder()
+                                                                         .slug(articleEntity.getSlug())
+                                                                         .title(articleEntity.getTitle())
+                                                                         .description(articleEntity.getDescription())
+                                                                         .body(articleEntity.getBody())
+                                                                         .tagList(tagList)
+                                                                         .createdAt(articleEntity.getCreatedAt()
+                                                                                                 .toString())
+                                                                         .updatedAt(articleEntity.getUpdatedAt()
+                                                                                                 .toString())
+                                                                         .favorite(isFavorite)
+                                                                         .favoritesCount(articleEntity.getFavoriteEntities()
+                                                                                                      .size())
+                                                                         .author(authorDto)
+                                                                         .build();
+            multipleArticleResDto.getArticles().add(singleArticleResDto);
+            System.out.println("============end========");
         });
         multipleArticleResDto.setArticlesCount(multipleArticleResDto.getArticles().size());
         return multipleArticleResDto;

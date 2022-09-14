@@ -1,5 +1,6 @@
 package springboot.domain.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -26,4 +27,10 @@ public class ArticleTagEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     TagEntity tagEntity;
+
+    @Column(name = "article_id", updatable = false, insertable = false)
+    private Long articleId;
+
+    @Column(name = "tag_id", updatable = false, insertable = false)
+    private Long tagId;
 }

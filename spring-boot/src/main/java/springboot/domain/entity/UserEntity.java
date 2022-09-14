@@ -72,4 +72,5 @@ public class UserEntity extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "userEntity")
     List<CommentEntity> commentEntities = new ArrayList<>();
+
 }

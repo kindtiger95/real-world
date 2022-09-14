@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import springboot.common.utility.JwtUtility;
 import springboot.domain.dto.UserDto.LoginDto;
 import springboot.domain.dto.UserDto.RegisterDto;
@@ -66,11 +67,7 @@ public class UserService {
     public UserResDto updateUserInfo(UpdateDto updateDto) {
         UserEntity currentUserEntity = this.lookupService.getCurrentUserEntity()
                                                          .orElseThrow(() -> new RuntimeException("Authentication 없음"));
-        String password = "";
-        if (!updateDto.getPassword()
-                      .isEmpty()) {
-            password = this.bCryptPasswordEncoder.encode(updateDto.getPassword());
-        }
+        String password = StringUtils.hasText(updateDto.getPassword()) ? this.bCryptPasswordEncoder.encode(updateDto.getPassword()) : "";
         currentUserEntity.changeUserInfo(updateDto.getEmail(), updateDto.getUsername(), password,
             updateDto.getBio(), updateDto.getImage());
         String token = this.jwtUtility.jwtSign(currentUserEntity.getUid(), currentUserEntity.getUsername());
