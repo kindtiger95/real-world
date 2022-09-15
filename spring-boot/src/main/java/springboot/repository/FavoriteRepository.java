@@ -8,6 +8,5 @@ import springboot.domain.entity.FavoriteEntity;
 
 public interface FavoriteRepository extends JpaRepository<FavoriteEntity, Long> {
 
-    @Query("SELECT f FROM FavoriteEntity AS f WHERE f.userId = :userId")
-    Optional<FavoriteEntity> findUsingUserId(@Param("userId") Long userId);
+    Optional<FavoriteEntity> findByUserId(Long userId);
 }

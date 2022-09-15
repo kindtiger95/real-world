@@ -190,7 +190,7 @@ public class ArticleService {
             });
 
             System.out.println("============favorite repo query========");
-            boolean isFavorite = currentUserEntityOpt.isPresent() && this.favoriteRepository.findUsingUserId(currentUserEntityOpt.get().getUid())
+            boolean isFavorite = currentUserEntityOpt.isPresent() && this.favoriteRepository.findByUserId(currentUserEntityOpt.get().getUid())
                                                                                             .isPresent();
 
             AuthorDto authorDto = createAuthorDto(articleEntity.getUserEntity());
