@@ -2,9 +2,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:23306/realworld
+    url: jdbc:mysql://
     username: root
-    password: ibjang123
+    password: 
 # Debug SQL query
   jpa:
     show-sql: true
