@@ -3,6 +3,7 @@ package springboot.service;
 import io.jsonwebtoken.Claims;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,12 +18,14 @@ public class LookupService {
     private final UserRepository userRepository;
 
     public Optional<UserEntity> getCurrentUserEntity() {
-        JwtCustomToken authentication = (JwtCustomToken) SecurityContextHolder.getContext()
-                                                                              .getAuthentication();
-        if (authentication == null)
+        Authentication authentication = SecurityContextHolder.getContext()
+                                                             .getAuthentication();
+        if (!(authentication instanceof JwtCustomToken))
             return Optional.empty();
 
-        Claims claims = authentication.getPrincipal();
+        JwtCustomToken jwtCustomToken = (JwtCustomToken) authentication;
+
+        Claims claims = jwtCustomToken.getPrincipal();
         Integer userUid = (Integer) claims.get("userUid");
         String userName = (String) claims.get("userName");
 

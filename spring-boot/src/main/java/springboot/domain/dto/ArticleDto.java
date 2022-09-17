@@ -67,4 +67,14 @@ public class ArticleDto {
         private Integer articlesCount;
         private List<SingleArticleResDto> articles = new ArrayList<>();
     }
+
+    @Getter
+    @Setter
+    public static class ArticleInquiryParameter {
+        private String author;
+        private String tag;
+        private String favorited;
+        private Integer limit = 20;
+        private Integer offset = 0;
+    }
 }

@@ -1,11 +1,6 @@
 package springboot.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -14,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import springboot.domain.dto.ArticleDto.ArticleInquiryParameter;
 import springboot.domain.dto.ArticleDto.CreateArticleReqDto;
 import springboot.domain.dto.ArticleDto.MultipleArticleResDto;
 import springboot.domain.dto.ArticleDto.SingleArticleResDto;
@@ -39,21 +35,11 @@ public class ArticleController {
 
     @GetMapping("/articles")
     MultipleArticleResDto getArticles(@ModelAttribute ArticleInquiryParameter parameter) {
-        return this.articleService.getArticle(parameter.author, parameter.tag, parameter.favorited, parameter.limit, parameter.offset);
+        return this.articleService.getArticle(parameter.getAuthor(), parameter.getTag(), parameter.getFavorited(), parameter.getLimit(), parameter.getOffset());
     }
 
     @GetMapping("/articles/feed")
     MultipleArticleResDto getArticlesFeed(@ModelAttribute ArticleInquiryParameter parameter) {
         return null;
-    }
-
-    @Getter
-    @Setter
-    public static class ArticleInquiryParameter {
-        private String author;
-        private String tag;
-        private String favorited;
-        private Integer limit = 20;
-        private Integer offset = 0;
     }
 }
