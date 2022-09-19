@@ -42,4 +42,9 @@ public class ArticleController {
     MultipleArticleResDto getArticlesFeed(@ModelAttribute ArticleInquiryParameter parameter) {
         return null;
     }
+
+    @PostMapping("/articles/{slug}/favorite")
+    SingleArticleResDto favoriteArticle(@PathVariable("slug") String slug) {
+        return this.articleService.favoriteArticle(slug);
+    }
 }

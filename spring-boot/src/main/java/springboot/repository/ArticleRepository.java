@@ -21,7 +21,10 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
         + "WHERE a.slug = :slug")
     Optional<ArticleEntity> findBySlugUsingFetch(@Param("slug") String slug);
 
-    @Query(value = "SELECT a FROM ArticleEntity AS a JOIN FETCH a.userEntity AS u JOIN a.userEntity AS ue WHERE ue.username = :author ORDER BY a.createdAt DESC",
+    @Query(value = "SELECT a FROM ArticleEntity AS a "
+        + "JOIN FETCH a.userEntity AS u "
+        + "JOIN a.userEntity AS ue "
+        + "WHERE ue.username = :author ORDER BY a.createdAt DESC",
     countQuery = "SELECT COUNT(a.uid) FROM ArticleEntity AS a JOIN a.userEntity AS ue WHERE ue.username = :author")
     Page<ArticleEntity> findUsingAuthorPaging(@Param("author") String author, Pageable pageable);
 
@@ -29,7 +32,11 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
 
     List<ArticleEntity> findByUserEntity(UserEntity userEntity);
 
-    @Query(value = "SELECT a FROM ArticleEntity AS a JOIN FETCH a.userEntity AS u JOIN a.articleTagEntities AS at JOIN at.tagEntity AS t WHERE t.tag = :tag ORDER BY a.createdAt DESC",
+    @Query(value = "SELECT a FROM ArticleEntity AS a "
+        + "JOIN FETCH a.userEntity AS u "
+        + "JOIN a.articleTagEntities AS at "
+        + "JOIN at.tagEntity AS t "
+        + "WHERE t.tag = :tag ORDER BY a.createdAt DESC",
         countQuery = "SELECT COUNT(a.uid) FROM ArticleEntity AS a JOIN a.articleTagEntities AS at JOIN at.tagEntity AS t WHERE t.tag = :tag")
     Page<ArticleEntity> findUsingTagPaging(@Param("tag") String tag, Pageable pageable);
 }

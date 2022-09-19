@@ -17,7 +17,6 @@ import springboot.domain.dto.ArticleDto.MultipleArticleResDto;
 import springboot.domain.dto.ArticleDto.SingleArticleResDto;
 import springboot.domain.dto.ArticleDto.UpdateArticleReqDto;
 import springboot.domain.entity.ArticleEntity;
-import springboot.domain.entity.ArticleTagEntity;
 import springboot.domain.entity.FavoriteEntity;
 import springboot.domain.entity.UserEntity;
 import springboot.repository.ArticleRepository;
@@ -97,11 +96,11 @@ public class ArticleService {
             articleEntity.updateTitleAndSlug(title, reNewSlug);
         }
 
+        // @formatter:off
         List<String> tagList = new ArrayList<>();
         articleEntity.getArticleTagEntities()
                      .forEach(articleTagEntity -> {
-                         tagList.add(articleTagEntity.getTagEntity()
-                                                     .getTag());
+                         tagList.add(articleTagEntity.getTagEntity().getTag());
                      });
 
         AuthorDto authorDto = createAuthorDto(userEntity);
@@ -111,14 +110,13 @@ public class ArticleService {
                                   .description(articleEntity.getDescription())
                                   .body(articleEntity.getBody())
                                   .tagList(tagList)
-                                  .createdAt(articleEntity.getCreatedAt()
-                                                          .toString())
-                                  .updatedAt(articleEntity.getUpdatedAt()
-                                                          .toString())
+                                  .createdAt(articleEntity.getCreatedAt().toString())
+                                  .updatedAt(articleEntity.getUpdatedAt().toString())
                                   .favorite(false)
                                   .favoritesCount(0)
                                   .author(authorDto)
                                   .build();
+        // @formatter:on
     }
 
     public MultipleArticleResDto getArticle(String author, String tag, String favorited, Integer limit, Integer offset) {
@@ -127,7 +125,7 @@ public class ArticleService {
         } else if (StringUtils.hasText(tag)) {
             return this.getArticleByTag(tag, limit, offset);
         } else if (StringUtils.hasText(favorited)) {
-
+            return this.getArticleByFavorite(favorited, limit, offset);
         }
         throw new RuntimeException("파라미터 오류");
     }
@@ -138,6 +136,19 @@ public class ArticleService {
 //
 //
 //    }
+
+    public SingleArticleResDto favoriteArticle(String slug) {
+        ArticleEntity articleEntity = this.articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("해당 게시글을 찾을 수 없습니다"));
+        UserEntity currentUserEntity = this.lookupService.getCurrentUserEntity().orElseThrow(() -> new RuntimeException("로그인 정보를 찾을 수 없습니다"));
+        FavoriteEntity favoriteEntity = FavoriteEntity.builder()
+                                                      .userEntity(currentUserEntity)
+                                                      .articleEntity(articleEntity)
+                                                      .build();
+        this.favoriteRepository.save(favoriteEntity);
+        List<String> tagList = new ArrayList<>();
+        articleEntity.getArticleTagEntities().forEach(articleTagEntity -> tagList.add(articleTagEntity.getTagEntity().getTag()));
+        return getSingleArticleResDto(currentUserEntity, articleEntity, tagList);
+    }
 
     private MultipleArticleResDto getArticleByAuthor(String author, Integer limit, Integer offset) {
         PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
@@ -163,6 +174,23 @@ public class ArticleService {
         MultipleArticleResDto multipleArticleResDto = new MultipleArticleResDto();
         content.forEach(articleEntity -> {
             List<String> tagList = new ArrayList<>();
+            articleEntity.getArticleTagEntities().forEach(articleTagEntity -> tagList.add(articleTagEntity.getTagEntity().getTag()));
+            SingleArticleResDto singleArticleResDto = getSingleArticleResDto(currentUserEntity, articleEntity, tagList);
+            multipleArticleResDto.getArticles().add(singleArticleResDto);
+        });
+        multipleArticleResDto.setArticlesCount(multipleArticleResDto.getArticles().size());
+        return multipleArticleResDto;
+    }
+
+    private MultipleArticleResDto getArticleByFavorite(String favoriteUser, Integer limit, Integer offset) {
+        PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<FavoriteEntity> favoriteByUser = this.favoriteRepository.findUsingUser(favoriteUser, pageRequest);
+        List<FavoriteEntity> content = favoriteByUser.getContent();
+        UserEntity currentUserEntity = this.lookupService.getCurrentUserEntity().orElse(null);
+        MultipleArticleResDto multipleArticleResDto = new MultipleArticleResDto();
+        content.forEach(favoriteEntity -> {
+            List<String> tagList = new ArrayList<>();
+            ArticleEntity articleEntity = favoriteEntity.getArticleEntity();
             articleEntity.getArticleTagEntities().forEach(articleTagEntity -> tagList.add(articleTagEntity.getTagEntity().getTag()));
             SingleArticleResDto singleArticleResDto = getSingleArticleResDto(currentUserEntity, articleEntity, tagList);
             multipleArticleResDto.getArticles().add(singleArticleResDto);
