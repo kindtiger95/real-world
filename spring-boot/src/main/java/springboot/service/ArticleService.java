@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -117,6 +118,17 @@ public class ArticleService {
                                   .author(authorDto)
                                   .build();
         // @formatter:on
+    }
+
+    public void deleteArticle(String slug) {
+        ArticleEntity articleEntity = this.articleRepository.findBySlug(slug)
+                                                            .orElseThrow(() -> new RuntimeException("해당 게시글을 찾을 수 없습니다."));
+        UserEntity currentUser = this.lookupService.getCurrentUserEntity()
+                                                  .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        UserEntity userEntity = articleEntity.getUserEntity();
+        if (currentUser != userEntity)
+            throw new RuntimeException("권한 없음");
+        this.articleRepository.delete(articleEntity);
     }
 
     public MultipleArticleResDto getArticle(String author, String tag, String favorited, Integer limit, Integer offset) {
