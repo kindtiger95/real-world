@@ -17,6 +17,8 @@ import springboot.domain.dto.ArticleDto.CreateArticleReqDto;
 import springboot.domain.dto.ArticleDto.MultipleArticleResDto;
 import springboot.domain.dto.ArticleDto.SingleArticleResDto;
 import springboot.domain.dto.ArticleDto.UpdateArticleReqDto;
+import springboot.domain.dto.CommentDto.CreateCommentReqDto;
+import springboot.domain.dto.CommentDto.SingleCommentDto;
 import springboot.service.ArticleService;
 
 @RestController
@@ -56,4 +58,10 @@ public class ArticleController {
     SingleArticleResDto favoriteArticle(@PathVariable("slug") String slug) {
         return this.articleService.favoriteArticle(slug);
     }
+//
+//    @PostMapping("/articles/{slug}/comments")
+//    SingleCommentDto addComment(@PathVariable("slug") String slug, CreateCommentReqDto createCommentReqDto) {
+//        return this.articleService.addComment(slug, createCommentReqDto);
+//    }
+
 }

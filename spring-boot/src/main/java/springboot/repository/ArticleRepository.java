@@ -13,6 +13,9 @@ import springboot.domain.entity.UserEntity;
 public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
     Optional<ArticleEntity> findBySlug(String slug);
 
+    @Query("SELECT a FROM ArticleEntity AS a JOIN FETCH a.userEntity AS u WHERE a.slug = :slug")
+    Optional<ArticleEntity> findBySlugFetchUser(@Param("slug") String slug);
+
     // 페이징이 필요 없어서 DISTINCT 로 조회
     @Query("SELECT DISTINCT a FROM ArticleEntity AS a "
         + "JOIN FETCH a.userEntity AS u "

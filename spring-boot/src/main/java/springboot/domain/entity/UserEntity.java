@@ -55,11 +55,11 @@ public class UserEntity extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "followerEntity")
-    List<FollowEntity> followerEntity = new ArrayList<>();
+    List<FollowEntity> followerEntities = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "followeeEntity")
-    List<FollowEntity> followeeEntity = new ArrayList<>();
+    List<FollowEntity> followeeEntities = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "userEntity")

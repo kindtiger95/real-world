@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,10 +37,7 @@ public class ArticleDto {
 
     @Builder
     @Getter
-    @JsonTypeName("article")
-    @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
-    public static class SingleArticleResDto {
-
+    public static class ArticleResDto {
         private String slug;
         private String title;
         private String description;
@@ -50,6 +48,12 @@ public class ArticleDto {
         private Boolean favorite;
         private Integer favoritesCount;
         private AuthorDto author;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class SingleArticleResDto {
+        private ArticleResDto article;
     }
 
     @Builder
@@ -65,7 +69,7 @@ public class ArticleDto {
     @Getter
     public static class MultipleArticleResDto {
         private Integer articlesCount;
-        private List<SingleArticleResDto> articles = new ArrayList<>();
+        private List<ArticleResDto> articles = new ArrayList<>();
     }
 
     @Getter

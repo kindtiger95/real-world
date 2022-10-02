@@ -2,6 +2,7 @@ package springboot.domain.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,13 +42,13 @@ public class ArticleEntity extends BaseEntity {
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 
-    @OneToMany(mappedBy = "articleEntity")
+    @OneToMany(mappedBy = "articleEntity", cascade = CascadeType.ALL)
     private List<FavoriteEntity> favoriteEntities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "articleEntity")
+    @OneToMany(mappedBy = "articleEntity", cascade = CascadeType.ALL)
     private List<CommentEntity> commentEntities = new ArrayList<>();
 
-    @OneToMany(mappedBy = "articleEntity")
+    @OneToMany(mappedBy = "articleEntity", cascade = CascadeType.ALL)
     private List<ArticleTagEntity> articleTagEntities = new ArrayList<>();
 
     public void updateTitleAndSlug(String title, String slug) {
