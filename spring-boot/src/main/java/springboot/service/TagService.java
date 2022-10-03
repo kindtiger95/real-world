@@ -5,6 +5,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import springboot.domain.dto.TagDto.TagsResDto;
 import springboot.domain.entity.ArticleEntity;
 import springboot.domain.entity.ArticleTagEntity;
@@ -21,20 +22,19 @@ public class TagService {
 
     @Transactional
     public void createTag(List<String> tagList, ArticleEntity articleEntity) {
-        if (tagList == null || tagList.isEmpty()) {
+        if (CollectionUtils.isEmpty(tagList)) {
             return;
         }
 
-        tagList.forEach(tag -> {
-            Optional<TagEntity> tagEntityOptional = this.tagRepository.findByTag(tag);
-            TagEntity tagEntity = tagEntityOptional.orElseGet(() -> TagEntity.builder()
-                                                                             .tag(tag)
-                                                                             .build());
-            this.tagRepository.save(tagEntity);
-
-            ArticleTagEntity articleTagEntity = this.createArticleTagEntity(tagEntity, articleEntity);
+        for (String tag : tagList) {
+            Optional<TagEntity> tagEntityOpt = this.tagRepository.findByTag(tag);
+            if (tagEntityOpt.isEmpty()) {
+                tagEntityOpt = Optional.of(TagEntity.builder().tag(tag).build());
+                this.tagRepository.save(tagEntityOpt.get());
+            }
+            ArticleTagEntity articleTagEntity = this.createArticleTagEntity(tagEntityOpt.get(), articleEntity);
             this.articleTagRepository.save(articleTagEntity);
-        });
+        }
     }
 
     public TagsResDto getAllTags() {

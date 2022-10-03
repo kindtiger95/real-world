@@ -1,6 +1,5 @@
 package springboot.service;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,11 +24,9 @@ public class UserService {
     private final JwtUtility jwtUtility;
 
     public UserResDto loginProcessing(LoginDto loginDto) {
-        UserEntity userEntity = this.userRepository.findByEmail(loginDto.getEmail())
-                                                   .orElseThrow(() -> new RuntimeException("유저 없음"));
+        UserEntity userEntity = this.userRepository.findByEmail(loginDto.getEmail()).orElseThrow(() -> new RuntimeException("유저 없음"));
         String password = userEntity.getPassword();
-        boolean matches = this.bCryptPasswordEncoder.matches(loginDto.getPassword(), password);
-        if (!matches) {
+        if (!this.bCryptPasswordEncoder.matches(loginDto.getPassword(), password)) {
             throw new RuntimeException("비밀번호 일치하지 않음");
         }
 
@@ -39,8 +36,7 @@ public class UserService {
 
     @Transactional
     public UserResDto registerProcessing(RegisterDto registerDto) {
-        Optional<UserEntity> userFined = this.userRepository.findByEmail(registerDto.getEmail());
-        if (userFined.isPresent()) {
+        if (this.userRepository.findByEmail(registerDto.getEmail()).isPresent()) {
             throw new RuntimeException("이미 등록된 이메일입니다.");
         }
 
@@ -57,21 +53,18 @@ public class UserService {
     }
 
     public UserResDto getCurrentUser() {
-        UserEntity currentUserEntity = this.lookupService.getCurrentUserEntity()
-                                                         .orElseThrow(() -> new RuntimeException("Authentication 없음"));
-        String token = this.jwtUtility.jwtSign(currentUserEntity.getUid(), currentUserEntity.getUsername());
-        return getUserResDto(currentUserEntity, token);
+        UserEntity loginUser = this.lookupService.getCurrentUserEntity().orElseThrow(() -> new RuntimeException("Authentication 없음"));
+        String token = this.jwtUtility.jwtSign(loginUser.getUid(), loginUser.getUsername());
+        return getUserResDto(loginUser, token);
     }
 
     @Transactional
     public UserResDto updateUserInfo(UpdateDto updateDto) {
-        UserEntity currentUserEntity = this.lookupService.getCurrentUserEntity()
-                                                         .orElseThrow(() -> new RuntimeException("Authentication 없음"));
+        UserEntity loginUser = this.lookupService.getCurrentUserEntity().orElseThrow(() -> new RuntimeException("Authentication 없음"));
         String password = StringUtils.hasText(updateDto.getPassword()) ? this.bCryptPasswordEncoder.encode(updateDto.getPassword()) : "";
-        currentUserEntity.changeUserInfo(updateDto.getEmail(), updateDto.getUsername(), password,
-            updateDto.getBio(), updateDto.getImage());
-        String token = this.jwtUtility.jwtSign(currentUserEntity.getUid(), currentUserEntity.getUsername());
-        return this.getUserResDto(currentUserEntity, token);
+        loginUser.changeUserInfo(updateDto.getEmail(), updateDto.getUsername(), password, updateDto.getBio(), updateDto.getImage());
+        String token = this.jwtUtility.jwtSign(loginUser.getUid(), loginUser.getUsername());
+        return this.getUserResDto(loginUser, token);
     }
 
     private UserResDto getUserResDto(UserEntity currentUserEntity, String token) {

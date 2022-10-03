@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import springboot.domain.entity.UserEntity;
 
 public class ArticleDto {
 
@@ -63,6 +64,24 @@ public class ArticleDto {
         private String bio;
         private String image;
         private Boolean following;
+
+        public static AuthorDto createAuthorDto(UserEntity userEntity) {
+            return AuthorDto.builder()
+                            .username(userEntity.getUsername())
+                            .bio(userEntity.getBio())
+                            .image(userEntity.getImage())
+                            .following(false)
+                            .build();
+        }
+
+        public static AuthorDto createAuthorDto(UserEntity userEntity, boolean isFollowing) {
+            return AuthorDto.builder()
+                            .username(userEntity.getUsername())
+                            .bio(userEntity.getBio())
+                            .image(userEntity.getImage())
+                            .following(isFollowing)
+                            .build();
+        }
     }
 
     @Setter

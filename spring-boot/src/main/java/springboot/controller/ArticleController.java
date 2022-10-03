@@ -1,6 +1,5 @@
 package springboot.controller;
 
-import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Single;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -22,12 +21,14 @@ import springboot.domain.dto.CommentDto.CreateCommentReqDto;
 import springboot.domain.dto.CommentDto.MultipleCommentDto;
 import springboot.domain.dto.CommentDto.SingleCommentDto;
 import springboot.service.ArticleService;
+import springboot.service.CommentService;
 
 @RestController
 @RequiredArgsConstructor
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final CommentService commentService;
 
     @PostMapping("/articles")
     SingleArticleResDto createArticle(@RequestBody @Validated CreateArticleReqDto createArticleReqDto) {
@@ -48,7 +49,12 @@ public class ArticleController {
 
     @GetMapping("/articles")
     MultipleArticleResDto getArticles(@ModelAttribute ArticleInquiryParameter parameter) {
-        return this.articleService.getArticle(parameter.getAuthor(), parameter.getTag(), parameter.getFavorited(), parameter.getLimit(), parameter.getOffset());
+        return this.articleService.getArticles(parameter.getAuthor(), parameter.getTag(), parameter.getFavorited(), parameter.getLimit(), parameter.getOffset());
+    }
+
+    @GetMapping("/articles/{slug}")
+    SingleArticleResDto getArticle(@PathVariable("slug") String slug) {
+        return this.articleService.getArticle(slug);
     }
 
     @GetMapping("/articles/feed")
@@ -56,6 +62,7 @@ public class ArticleController {
         return null;
     }
 
+    // Related Favorite //
     @PostMapping("/articles/{slug}/favorite")
     SingleArticleResDto favoriteArticle(@PathVariable("slug") String slug) {
         return this.articleService.favoriteArticle(slug);
@@ -67,19 +74,20 @@ public class ArticleController {
         this.articleService.unFavoriteArticle(slug);
     }
 
+    // Related Comments //
     @PostMapping("/articles/{slug}/comments")
     SingleCommentDto addComment(@PathVariable("slug") String slug, @RequestBody @Validated CreateCommentReqDto createCommentReqDto) {
-        return this.articleService.addComment(slug, createCommentReqDto);
+        return this.commentService.addComment(slug, createCommentReqDto);
     }
 
     @GetMapping("/articles/{slug}/comments")
     MultipleCommentDto getComments(@PathVariable("slug") String slug) {
-        return this.articleService.getComments(slug);
+        return this.commentService.getComments(slug);
     }
 
     @DeleteMapping("/articles/{slug}/comments/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteComment(@PathVariable("slug") String slug, @PathVariable("id") Long id) {
-        this.articleService.deleteComment(slug, id);
+        this.commentService.deleteComment(slug, id);
     }
 }

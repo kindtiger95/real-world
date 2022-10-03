@@ -29,8 +29,8 @@ custom:
   basic-user: hiparking
   basic-password: inbeom123
 
-logging:
-  level:
-    org:
-      hibernate:
-        type: trace
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        type: trace

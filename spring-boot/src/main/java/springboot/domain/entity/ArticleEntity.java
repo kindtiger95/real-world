@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 @Getter
 @Entity
@@ -57,10 +58,10 @@ public class ArticleEntity extends BaseEntity {
     }
 
     public void updateArticle(String description, String body) {
-        if (description != null)
+        if (StringUtils.hasText(description))
             this.description = description;
 
-        if (body != null)
+        if (StringUtils.hasText(body))
             this.body = body;
     }
 }

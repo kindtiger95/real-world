@@ -14,6 +14,7 @@ public interface FavoriteRepository extends JpaRepository<FavoriteEntity, Long> 
 
     Optional<FavoriteEntity> findByUserEntityAndArticleEntity(UserEntity userEntity, ArticleEntity articleEntity);
 
-    @Query("SELECT f FROM FavoriteEntity AS f JOIN f.userEntity AS u JOIN f.articleEntity AS a WHERE u.username = :username ORDER BY a.createdAt DESC")
+    @Query(value = "SELECT f FROM FavoriteEntity AS f JOIN FETCH f.articleEntity AS a JOIN f.userEntity AS u ON u.username = :username",
+    countQuery = "SELECT COUNT(f) FROM FavoriteEntity AS f JOIN f.userEntity AS u ON u.username = :username")
     Page<FavoriteEntity> findUsingUser(@Param("username") String username, Pageable pageable);
 }

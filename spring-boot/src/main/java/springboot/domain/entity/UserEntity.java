@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 @Builder
 @AllArgsConstructor
@@ -36,19 +37,19 @@ public class UserEntity extends BaseEntity {
     private String image;
 
     public void changeUserInfo(String email, String username, String password, String bio, String image) {
-        if (email != null && !email.isEmpty()) {
+        if (StringUtils.hasText(email)) {
             this.email = email;
         }
-        if (username != null && !username.isEmpty()) {
+        if (StringUtils.hasText(username)) {
             this.username = username;
         }
-        if (password != null && !password.isEmpty()) {
+        if (StringUtils.hasText(password)) {
             this.password = password;
         }
-        if (bio != null && !bio.isEmpty()) {
+        if (StringUtils.hasText(bio)) {
             this.bio = bio;
         }
-        if (image != null && !image.isEmpty()) {
+        if (StringUtils.hasText(image)) {
             this.image = image;
         }
     }

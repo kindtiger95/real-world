@@ -12,6 +12,8 @@ import springboot.domain.entity.UserEntity;
 
 public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
     Optional<ArticleEntity> findBySlug(String slug);
+    Page<ArticleEntity> findByUserEntity(UserEntity userEntity, Pageable pageable);
+    List<ArticleEntity> findByUserEntity(UserEntity userEntity);
 
     @Query("SELECT a FROM ArticleEntity AS a JOIN FETCH a.userEntity AS u WHERE a.slug = :slug")
     Optional<ArticleEntity> findBySlugFetchUser(@Param("slug") String slug);
@@ -24,22 +26,11 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, Long> {
         + "WHERE a.slug = :slug")
     Optional<ArticleEntity> findBySlugUsingFetch(@Param("slug") String slug);
 
-    @Query(value = "SELECT a FROM ArticleEntity AS a "
-        + "JOIN FETCH a.userEntity AS u "
-        + "JOIN a.userEntity AS ue "
-        + "WHERE ue.username = :author ORDER BY a.createdAt DESC",
-    countQuery = "SELECT COUNT(a.uid) FROM ArticleEntity AS a JOIN a.userEntity AS ue WHERE ue.username = :author")
+    @Query(value = "SELECT a FROM ArticleEntity AS a JOIN a.userEntity AS u ON u.username = :author",
+    countQuery = "SELECT COUNT(a) FROM ArticleEntity AS a JOIN a.userEntity AS ue WHERE ue.username = :author")
     Page<ArticleEntity> findUsingAuthorPaging(@Param("author") String author, Pageable pageable);
 
-    Page<ArticleEntity> findByUserEntity(UserEntity userEntity, Pageable pageable);
-
-    List<ArticleEntity> findByUserEntity(UserEntity userEntity);
-
-    @Query(value = "SELECT a FROM ArticleEntity AS a "
-        + "JOIN FETCH a.userEntity AS u "
-        + "JOIN a.articleTagEntities AS at "
-        + "JOIN at.tagEntity AS t "
-        + "WHERE t.tag = :tag ORDER BY a.createdAt DESC",
-        countQuery = "SELECT COUNT(a.uid) FROM ArticleEntity AS a JOIN a.articleTagEntities AS at JOIN at.tagEntity AS t WHERE t.tag = :tag")
+    @Query(value = "SELECT a FROM ArticleEntity AS a JOIN FETCH a.userEntity JOIN a.articleTagEntities AS at JOIN at.tagEntity AS t ON t.tag = :tag",
+        countQuery = "SELECT COUNT(a) FROM ArticleEntity AS a JOIN a.articleTagEntities AS at JOIN at.tagEntity AS t WHERE t.tag = :tag")
     Page<ArticleEntity> findUsingTagPaging(@Param("tag") String tag, Pageable pageable);
 }

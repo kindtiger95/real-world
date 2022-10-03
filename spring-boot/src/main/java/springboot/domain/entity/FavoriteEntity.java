@@ -27,10 +27,4 @@ public class FavoriteEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
     ArticleEntity articleEntity;
-
-    @Column(name = "user_id", updatable = false, insertable = false)
-    private Long userId;
-
-    @Column(name = "article_id", updatable = false, insertable = false)
-    private Long articleId;
 }
