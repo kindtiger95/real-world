@@ -5,11 +5,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import springboot.domain.dto.ArticleDto.AuthorDto;
 
 public class CommentDto {
 
@@ -29,10 +31,7 @@ public class CommentDto {
         private String body;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
-        private String username;
-        private String bio;
-        private String image;
-        private Boolean following;
+        private AuthorDto author;
     }
 
     @Builder
@@ -41,9 +40,8 @@ public class CommentDto {
         private CommentResDto comment;
     }
 
-    @Builder
     @Getter
     public static class MultipleCommentDto {
-        private List<CommentResDto> comments;
+        private final List<CommentResDto> comments = new ArrayList<>();
     }
 }

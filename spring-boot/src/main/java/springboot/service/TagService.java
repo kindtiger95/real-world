@@ -5,6 +5,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import springboot.domain.dto.TagDto.TagsResDto;
 import springboot.domain.entity.ArticleEntity;
 import springboot.domain.entity.ArticleTagEntity;
 import springboot.domain.entity.TagEntity;
@@ -34,6 +35,15 @@ public class TagService {
             ArticleTagEntity articleTagEntity = this.createArticleTagEntity(tagEntity, articleEntity);
             this.articleTagRepository.save(articleTagEntity);
         });
+    }
+
+    public TagsResDto getAllTags() {
+        List<TagEntity> tagList = this.tagRepository.findAll();
+        TagsResDto tagsResDto = new TagsResDto();
+        for (TagEntity tagEntity : tagList) {
+            tagsResDto.getTags().add(tagEntity.getTag());
+        }
+        return tagsResDto;
     }
 
     private ArticleTagEntity createArticleTagEntity(TagEntity tagEntity, ArticleEntity articleEntity) {

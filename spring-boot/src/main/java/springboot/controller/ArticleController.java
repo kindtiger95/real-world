@@ -1,5 +1,6 @@
 package springboot.controller;
 
+import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Single;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -18,6 +19,7 @@ import springboot.domain.dto.ArticleDto.MultipleArticleResDto;
 import springboot.domain.dto.ArticleDto.SingleArticleResDto;
 import springboot.domain.dto.ArticleDto.UpdateArticleReqDto;
 import springboot.domain.dto.CommentDto.CreateCommentReqDto;
+import springboot.domain.dto.CommentDto.MultipleCommentDto;
 import springboot.domain.dto.CommentDto.SingleCommentDto;
 import springboot.service.ArticleService;
 
@@ -58,10 +60,26 @@ public class ArticleController {
     SingleArticleResDto favoriteArticle(@PathVariable("slug") String slug) {
         return this.articleService.favoriteArticle(slug);
     }
-//
-//    @PostMapping("/articles/{slug}/comments")
-//    SingleCommentDto addComment(@PathVariable("slug") String slug, CreateCommentReqDto createCommentReqDto) {
-//        return this.articleService.addComment(slug, createCommentReqDto);
-//    }
 
+    @DeleteMapping("/articles/{slug}/favorite")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void unFavoriteArticle(@PathVariable("slug") String slug) {
+        this.articleService.unFavoriteArticle(slug);
+    }
+
+    @PostMapping("/articles/{slug}/comments")
+    SingleCommentDto addComment(@PathVariable("slug") String slug, @RequestBody @Validated CreateCommentReqDto createCommentReqDto) {
+        return this.articleService.addComment(slug, createCommentReqDto);
+    }
+
+    @GetMapping("/articles/{slug}/comments")
+    MultipleCommentDto getComments(@PathVariable("slug") String slug) {
+        return this.articleService.getComments(slug);
+    }
+
+    @DeleteMapping("/articles/{slug}/comments/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteComment(@PathVariable("slug") String slug, @PathVariable("id") Long id) {
+        this.articleService.deleteComment(slug, id);
+    }
 }
