@@ -131,33 +131,42 @@ public class ArticleService {
         return new SingleArticleResDto(articleResDto);
     }
 
-    //    public MultipleArticleResDto getArticleFeed(Integer limit, Integer offset) {
-//        UserEntity userEntity = this.lookupService.getCurrentUserEntity()
-//                                                  .orElseThrow(() -> new RuntimeException("현재 유저를 찾을 수 없습니다."));
-//
-//
-//    }
+    public MultipleArticleResDto getArticlesFeed(Integer limit, Integer offset) {
+        PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
+        UserEntity loginUser = this.lookupService.getCurrentUserEntity().orElseThrow(() -> new RuntimeException("현재 유저를 찾을 수 없습니다."));
+        Page<ArticleEntity> articleByFollowerUser = this.articleRepository.getArticleByFollowerUser(loginUser, pageRequest);
+        List<ArticleEntity> content = articleByFollowerUser.getContent();
+        MultipleArticleResDto multipleArticleResDto = new MultipleArticleResDto();
+        content.forEach(articleEntity -> {
+            List<String> tagList = new ArrayList<>();
+            articleEntity.getArticleTagEntities().forEach(articleTagEntity -> tagList.add(articleTagEntity.getTagEntity().getTag()));
+            ArticleResDto articleResDto = getSingleArticleResDto(loginUser, articleEntity, tagList);
+            multipleArticleResDto.getArticles().add(articleResDto);
+        });
+        multipleArticleResDto.setArticlesCount(multipleArticleResDto.getArticles().size());
+        return multipleArticleResDto;
+    }
 
     @Transactional
     public SingleArticleResDto favoriteArticle(String slug) {
         ArticleEntity articleEntity = this.articleRepository.findBySlugUsingFetch(slug).orElseThrow(() -> new RuntimeException("해당 게시글을 찾을 수 없습니다"));
-        UserEntity currentUserEntity = this.lookupService.getCurrentUserEntity().orElseThrow(() -> new RuntimeException("로그인 정보를 찾을 수 없습니다"));
+        UserEntity loginUser = this.lookupService.getCurrentUserEntity().orElseThrow(() -> new RuntimeException("로그인 정보를 찾을 수 없습니다"));
         FavoriteEntity favoriteEntity = FavoriteEntity.builder()
-                                                      .userEntity(currentUserEntity)
+                                                      .userEntity(loginUser)
                                                       .articleEntity(articleEntity)
                                                       .build();
         this.favoriteRepository.save(favoriteEntity);
         List<String> tagList = new ArrayList<>();
         articleEntity.getArticleTagEntities().forEach(articleTagEntity -> tagList.add(articleTagEntity.getTagEntity().getTag()));
-        ArticleResDto articleResDto = getSingleArticleResDto(currentUserEntity, articleEntity, tagList);
+        ArticleResDto articleResDto = getSingleArticleResDto(loginUser, articleEntity, tagList);
         return new SingleArticleResDto(articleResDto);
     }
 
     @Transactional
     public void unFavoriteArticle(String slug) {
         ArticleEntity articleEntity = this.articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("해당 게시글을 찾을 수 없습니다."));
-        UserEntity userEntity = this.lookupService.getCurrentUserEntity().orElseThrow(() -> new RuntimeException("로그인 정보를 찾을 수 없습니다"));
-        FavoriteEntity favoriteEntity = this.favoriteRepository.findByUserEntityAndArticleEntity(userEntity, articleEntity).orElseThrow(() -> new RuntimeException("팔로우 하지 않음"));
+        UserEntity loginUser = this.lookupService.getCurrentUserEntity().orElseThrow(() -> new RuntimeException("로그인 정보를 찾을 수 없습니다"));
+        FavoriteEntity favoriteEntity = this.favoriteRepository.findByUserEntityAndArticleEntity(loginUser, articleEntity).orElseThrow(() -> new RuntimeException("팔로우 하지 않음"));
         this.favoriteRepository.delete(favoriteEntity);
     }
 
@@ -165,12 +174,12 @@ public class ArticleService {
         PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ArticleEntity> articleByAuthorPaging = this.articleRepository.findUsingAuthorPaging(author, pageRequest);
         List<ArticleEntity> content = articleByAuthorPaging.getContent();
-        UserEntity currentUserEntity = this.lookupService.getCurrentUserEntity().orElse(null);
+        UserEntity loginUser = this.lookupService.getCurrentUserEntity().orElse(null);
         MultipleArticleResDto multipleArticleResDto = new MultipleArticleResDto();
         content.forEach(articleEntity -> {
             List<String> tagList = new ArrayList<>();
             articleEntity.getArticleTagEntities().forEach(articleTagEntity -> tagList.add(articleTagEntity.getTagEntity().getTag()));
-            ArticleResDto articleResDto = getSingleArticleResDto(currentUserEntity, articleEntity, tagList);
+            ArticleResDto articleResDto = getSingleArticleResDto(loginUser, articleEntity, tagList);
             multipleArticleResDto.getArticles().add(articleResDto);
         });
         multipleArticleResDto.setArticlesCount(multipleArticleResDto.getArticles().size());
@@ -181,12 +190,12 @@ public class ArticleService {
         PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ArticleEntity> usingTagPaging = this.articleRepository.findUsingTagPaging(tag, pageRequest);
         List<ArticleEntity> content = usingTagPaging.getContent();
-        UserEntity currentUserEntity = this.lookupService.getCurrentUserEntity().orElse(null);
+        UserEntity loginUser = this.lookupService.getCurrentUserEntity().orElse(null);
         MultipleArticleResDto multipleArticleResDto = new MultipleArticleResDto();
         content.forEach(articleEntity -> {
             List<String> tagList = new ArrayList<>();
             articleEntity.getArticleTagEntities().forEach(articleTagEntity -> tagList.add(articleTagEntity.getTagEntity().getTag()));
-            ArticleResDto articleResDto = getSingleArticleResDto(currentUserEntity, articleEntity, tagList);
+            ArticleResDto articleResDto = getSingleArticleResDto(loginUser, articleEntity, tagList);
             multipleArticleResDto.getArticles().add(articleResDto);
         });
         multipleArticleResDto.setArticlesCount(multipleArticleResDto.getArticles().size());
@@ -197,13 +206,13 @@ public class ArticleService {
         PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<FavoriteEntity> favoriteByUser = this.favoriteRepository.findUsingUser(favoriteUser, pageRequest);
         List<FavoriteEntity> content = favoriteByUser.getContent();
-        UserEntity currentUserEntity = this.lookupService.getCurrentUserEntity().orElse(null);
+        UserEntity loginUser = this.lookupService.getCurrentUserEntity().orElse(null);
         MultipleArticleResDto multipleArticleResDto = new MultipleArticleResDto();
         content.forEach(favoriteEntity -> {
             List<String> tagList = new ArrayList<>();
             ArticleEntity articleEntity = favoriteEntity.getArticleEntity();
             articleEntity.getArticleTagEntities().forEach(articleTagEntity -> tagList.add(articleTagEntity.getTagEntity().getTag()));
-            ArticleResDto articleResDto = getSingleArticleResDto(currentUserEntity, articleEntity, tagList);
+            ArticleResDto articleResDto = getSingleArticleResDto(loginUser, articleEntity, tagList);
             multipleArticleResDto.getArticles().add(articleResDto);
         });
         multipleArticleResDto.setArticlesCount(multipleArticleResDto.getArticles().size());

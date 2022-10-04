@@ -59,7 +59,7 @@ public class ArticleController {
 
     @GetMapping("/articles/feed")
     MultipleArticleResDto getArticlesFeed(@ModelAttribute ArticleInquiryParameter parameter) {
-        return null;
+        return this.articleService.getArticlesFeed(parameter.getLimit(), parameter.getOffset());
     }
 
     // Related Favorite //

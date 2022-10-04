@@ -26,17 +26,17 @@ public class CommentService {
 
     @Transactional
     public SingleCommentDto addComment(String slug, CreateCommentReqDto createCommentReqDto) {
-        UserEntity userEntity = this.lookupService.getCurrentUserEntity().orElseThrow(() -> new RuntimeException("로그인 유저만 댓글을 달 수 있습니다."));
+        UserEntity loginUser = this.lookupService.getCurrentUserEntity().orElseThrow(() -> new RuntimeException("로그인 유저만 댓글을 달 수 있습니다."));
         ArticleEntity articleEntity = this.articleRepository.findBySlugFetchUser(slug).orElseThrow(() -> new RuntimeException("해당 게시글을 찾을 수 없습니다."));
-        boolean isFollowing = articleEntity.getUserEntity().getFolloweeEntities().stream().anyMatch(followEntity -> followEntity.getFolloweeEntity() == userEntity);
+        boolean isFollowing = articleEntity.getUserEntity().getFolloweeEntities().stream().anyMatch(followEntity -> followEntity.getFolloweeEntity() == loginUser);
         AuthorDto authorDto = AuthorDto.builder()
-                                       .bio(userEntity.getBio())
-                                       .username(userEntity.getUsername())
+                                       .bio(loginUser.getBio())
+                                       .username(loginUser.getUsername())
                                        .following(isFollowing)
-                                       .image(userEntity.getImage())
+                                       .image(loginUser.getImage())
                                        .build();
         CommentEntity commentEntity = CommentEntity.builder()
-                                                   .userEntity(userEntity)
+                                                   .userEntity(loginUser)
                                                    .articleEntity(articleEntity)
                                                    .body(createCommentReqDto.getBody())
                                                    .build();
@@ -55,14 +55,14 @@ public class CommentService {
 
     public MultipleCommentDto getComments(String slug) {
         ArticleEntity articleEntity = this.articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("해당 게시글을 찾을 수 없습니다."));
-        Optional<UserEntity> currentUserEntity = this.lookupService.getCurrentUserEntity();
+        Optional<UserEntity> loginUser = this.lookupService.getCurrentUserEntity();
         List<CommentEntity> commentEntityList = this.commentRepository.findByArticleEntity(articleEntity.getUid());
         MultipleCommentDto multipleCommentDto = new MultipleCommentDto();
         for (CommentEntity commentEntity : commentEntityList) {
             UserEntity userEntity = commentEntity.getUserEntity();
-            boolean isFollowing = currentUserEntity.isPresent() && userEntity.getFolloweeEntities()
+            boolean isFollowing = loginUser.isPresent() && userEntity.getFolloweeEntities()
                                                                              .stream()
-                                                                             .anyMatch(followEntity -> followEntity.getFollowerEntity() == currentUserEntity.get());
+                                                                             .anyMatch(followEntity -> followEntity.getFollowerEntity() == loginUser.get());
             AuthorDto authorDto = AuthorDto.builder()
                                            .image(userEntity.getImage())
                                            .bio(userEntity.getBio())
@@ -83,10 +83,10 @@ public class CommentService {
 
     @Transactional
     public void deleteComment(String slug, Long id) {
-        UserEntity userEntity = this.lookupService.getCurrentUserEntity().orElseThrow(() -> new RuntimeException("로그인 정보가 없습니다."));
+        UserEntity loginUser = this.lookupService.getCurrentUserEntity().orElseThrow(() -> new RuntimeException("로그인 정보가 없습니다."));
         ArticleEntity articleEntity = this.articleRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("해당 게시글을 찾을 수 없습니다."));
         CommentEntity commentEntity = this.commentRepository.findByIdFetchJoin(id).orElseThrow(() -> new RuntimeException("해당 댓글을 찾을 수 없습니다."));
-        if (commentEntity.getUserEntity() != userEntity || commentEntity.getArticleEntity() != articleEntity)
+        if (commentEntity.getUserEntity() != loginUser || commentEntity.getArticleEntity() != articleEntity)
             throw new RuntimeException("권한이 없습니다.");
         this.commentRepository.delete(commentEntity);
     }
