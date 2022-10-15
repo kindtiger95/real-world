@@ -1,0 +1,36 @@
+# MySQL
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://129.154.58.138:39812/realworld
+    username: root
+    password: DTOLGOn0X7kNhZUQpyyQ4HOJjhQ7WeZDVI
+  # Debug SQL query
+  jpa:
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+      hibernate:
+        default_batch_fetch_size: 500
+    hibernate:
+      ddl-auto: none
+    open-in-view: off
+# Base Url
+server:
+  servlet:
+    context-path: /api
+
+# Jwt Secret Key
+custom:
+  jwt-secret-key: 4c6eb9803591a5f57292a9c6f11b975aeaab1855081eae8cadfb0a51e4a9a0a698ff54740886661770f8175ecb189ddc8de557dfffcb4fb9bfe01e80d2a5c955
+  jwt-role: USER
+  security-role: ROLE
+  basic-role: PARTNER
+  basic-user: hiparking
+  basic-password: inbeom123
+
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        type: trace
