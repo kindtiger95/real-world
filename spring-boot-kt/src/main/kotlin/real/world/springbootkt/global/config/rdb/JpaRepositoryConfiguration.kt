@@ -41,7 +41,7 @@ class JpaRepositoryConfiguration @Autowired constructor(
 
     @Bean
     @Primary
-    fun masterTransactionManager(
+    fun transactionManager(
         @Qualifier("entityManagerFactory") entityManagerFactory: EntityManagerFactory
     ): PlatformTransactionManager {
         return JpaTransactionManager(entityManagerFactory)

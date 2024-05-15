@@ -11,6 +11,7 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter
 import real.world.springbootkt.global.common.SecurityProperties
 import real.world.springbootkt.global.filter.JwtFilter
+import real.world.springbootkt.global.utility.JwtProvider
 
 @Configuration
 @EnableWebSecurity
@@ -30,7 +31,15 @@ class SecurityConfig(
             AuthenticationManager::class.java,
             this.authenticationManagerBuilder.getOrBuild()
         )
-        return http.csrf { it.disable() }
+        return http.authorizeHttpRequests {
+                it.requestMatchers("/user/**")
+                    .hasAuthority(securityProperties.jwtRole)
+                    .requestMatchers("/profiles/{username}/**")
+                    .hasAuthority(securityProperties.jwtRole)
+                    .anyRequest()
+                    .permitAll()
+            }
+            .csrf { it.disable() }
             .cors { it.disable() }
             .httpBasic { it.disable() }
             .requestCache { it.disable() }
@@ -43,14 +52,6 @@ class SecurityConfig(
                 JwtFilter(http.getSharedObject(AuthenticationManager::class.java)),
                 WebAsyncManagerIntegrationFilter::class.java
             )
-            .authorizeHttpRequests {
-                it.requestMatchers("/user/**")
-                    .hasAuthority(securityProperties.jwtRole)
-                    .requestMatchers("/profiles/{username}/**")
-                    .hasAuthority(securityProperties.jwtRole)
-                    .anyRequest()
-                    .permitAll()
-            }
             .exceptionHandling {
                 it.authenticationEntryPoint(CustomAuthenticationEntryPoint(objectMapper))
                     .accessDeniedHandler(CustomAccessDeniedHandler(objectMapper))

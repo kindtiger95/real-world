@@ -1,14 +1,13 @@
-package real.world.springbootkt.global.config.security
+package real.world.springbootkt.global.utility
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.JwtException
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.stereotype.Component
 import real.world.springbootkt.global.common.SecurityProperties
-import real.world.springbootkt.global.utility.JwtUtility
+import real.world.springbootkt.global.config.security.JwtAuthenticationToken
 
 @Component
 class JwtProvider(
@@ -17,7 +16,6 @@ class JwtProvider(
 ) : AuthenticationProvider {
     private val securityRole: String = securityProperties.securityRole
 
-    @Throws(AuthenticationException::class)
     override fun authenticate(authentication: Authentication): Authentication {
         val token = authentication.details as String
         try {
