@@ -1,0 +1,26 @@
+spring:
+  jpa:
+    open-in-view: false
+    database: MYSQL
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        globally_quoted_identifiers: true
+        default_batch_fetch_size: 200
+        dialect: org.hibernate.dialect.MySQLDialect
+        hbm2ddl:
+          auto: none
+---
+spring.config.activate.on-profile:
+  - default
+  - dev
+database:
+  master:
+    minimumIdle: 10
+    maximumPoolSize: 30
+
+  slave:
+    minimumIdle: 10
+    maximumPoolSize: 30
+    read-only: true

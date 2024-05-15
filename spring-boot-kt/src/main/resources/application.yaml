@@ -1,0 +1,16 @@
+spring:
+  application.name: spring-boot-kt
+  config:
+    import:
+      - classpath:application-db.yaml
+
+security:
+  jwt-secret-key:
+  jwt-role: USER
+  security-role: ROLE
+  basic-role: PARTNER
+  basic-user: kamo
+  basic-password: kamo1234
+
+server:
+  shutdown: graceful
