@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface FollowRepository : JpaRepository<Follow, Long> {
-    fun findByFollowerIdAndFolloweeId(followerId: )
+    fun findByFollowerIdAndFolloweeId(followerId: Long, followeeId: Long): Follow?
 }

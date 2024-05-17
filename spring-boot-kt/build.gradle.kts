@@ -24,13 +24,15 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("com.querydsl:querydsl-jpa:5.0.0")
-	implementation("com.querydsl:querydsl-apt:5.0.0:jpa")
+	implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
 	runtimeOnly("com.mysql:mysql-connector-j")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 	compileOnly("io.jsonwebtoken:jjwt-api:0.12.5")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+	annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
+	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
