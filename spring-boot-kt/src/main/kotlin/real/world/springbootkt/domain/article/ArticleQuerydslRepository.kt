@@ -1,9 +1,12 @@
 package real.world.springbootkt.domain.article
 
-import com.querydsl.jpa.impl.JPAQueryFactory
-import org.springframework.stereotype.Repository
-
-@Repository
-class ArticleQuerydslRepository(private val jpaQueryFactory: JPAQueryFactory) {
-
+interface ArticleQuerydslRepository {
+    fun findAllByTagAndAuthorAndFavorited(
+        tag: String?,
+        author: String?,
+        favorited: Boolean,
+        limit: Long,
+        offset: Long,
+        userId: Long?
+    ): List<Article>
 }

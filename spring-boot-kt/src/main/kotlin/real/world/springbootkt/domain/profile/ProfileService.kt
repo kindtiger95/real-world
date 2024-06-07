@@ -17,7 +17,10 @@ class ProfileService(
 ) {
     @Transactional(readOnly = true)
     fun getProfileByUsername(username: String): ProfileResource.Response {
-        val currentUser = this.userService.getCurrentUser()
+        val currentUser = this.userService.getCurrentUser() ?: throw ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "can't find user."
+        )
         val targetUser = this.userRepository.findByUsername(username) ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND,
             "not found target user."
@@ -29,7 +32,10 @@ class ProfileService(
 
     @Transactional
     fun follow(username: String): ProfileResource.Response {
-        val currentUser = this.userService.getCurrentUser()
+        val currentUser = this.userService.getCurrentUser() ?: throw ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "can't find user."
+        )
         val targetUser = this.userRepository.findByUsername(username) ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND,
             "not found target user."
@@ -46,7 +52,10 @@ class ProfileService(
 
     @Transactional
     fun unfollow(username: String): ProfileResource.Response {
-        val currentUser = this.userService.getCurrentUser()
+        val currentUser = this.userService.getCurrentUser() ?: throw ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "can't find user."
+        )
         val targetUser = this.userRepository.findByUsername(username) ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND,
             "not found target user."

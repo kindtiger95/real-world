@@ -39,24 +39,29 @@ class UserService(
     }
 
     fun me(): UserResources.User {
-        val user = this.getCurrentUser()
+        val user = this.getCurrentUser() ?: throw ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "can't find user."
+        )
         return UserResources.User.from(user, jwtUtility.jwtSign(user.id, user.username))
     }
 
     @Transactional
     fun update(request: UserResources.Update.Request): UserResources.User {
-        val user = userRepository.findByEmail(request.email)?.apply {
+        val user = this.getCurrentUser()?.apply {
+            this.username = request.username
+            this.email = request.email
             this.bio = request.bio
             this.image = request.image
             this.password = request.password
         } ?: throw ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "not found email."
+            HttpStatus.BAD_REQUEST,
+            "can't find user."
         )
         return UserResources.User.from(user, jwtUtility.jwtSign(user.id, user.username))
     }
 
-    fun getCurrentUser(): User {
+    fun getCurrentUser(): User? {
         val authentication = SecurityContextHolder.getContext().authentication as? JwtAuthenticationToken
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "no auth info.")
         val claims: Claims = authentication.getPrincipal()
@@ -68,10 +73,7 @@ class UserService(
             HttpStatus.UNAUTHORIZED,
             "can't find user name info from token."
         )
-        val user: User = userRepository.findByIdOrNull(userId) ?: throw ResponseStatusException(
-            HttpStatus.BAD_REQUEST,
-            "can't find user."
-        )
+        val user: User = userRepository.findByIdOrNull(userId) ?: return null
         if (user.username != userName) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "can't match username.")
         }

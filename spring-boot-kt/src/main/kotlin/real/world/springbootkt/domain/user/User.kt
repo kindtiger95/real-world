@@ -9,9 +9,9 @@ import real.world.springbootkt.global.common.BaseEntity
 @Entity
 class User(
     @Column(nullable = false)
-    val email: String,
+    var email: String,
     @Column(nullable = false)
-    val username: String,
+    var username: String,
     @Column(nullable = false)
     var password: String,
 ) : BaseEntity() {
