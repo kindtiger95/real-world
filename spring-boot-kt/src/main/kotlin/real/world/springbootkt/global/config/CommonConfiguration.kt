@@ -15,7 +15,7 @@ class CommonConfiguration(private val entityManager: EntityManager) {
     fun bCryptPasswordEncoder() = BCryptPasswordEncoder()
 
     @Bean
-    fun objectMapper() = ObjectMapper().registerKotlinModule()
+    fun objectMapper(): ObjectMapper = ObjectMapper().registerKotlinModule().findAndRegisterModules()
 
     @Bean
     fun jpqQueryFactory() = JPAQueryFactory(entityManager)

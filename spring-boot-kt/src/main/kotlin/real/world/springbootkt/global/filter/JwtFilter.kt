@@ -3,7 +3,9 @@ package real.world.springbootkt.global.filter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.InsufficientAuthenticationException
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.OncePerRequestFilter
@@ -34,7 +36,16 @@ class JwtFilter(private val authenticationManager: AuthenticationManager) : Once
     /*********************************** Private Function ***********************************/
     private fun getToken(request: HttpServletRequest): String? {
         val authHeader = request.getHeader(AUTHORIZATION_HEADER)
-        return if (authHeader == null) null
-        else if (authHeader.startsWith(BEARER_PREFIX)) authHeader.substring(BEARER_PREFIX.length) else null
+        return when {
+            authHeader == null -> {
+                request.setAttribute("exception", ErrorCode.UNAUTHORIZED.code)
+                null
+            }
+            authHeader.startsWith(BEARER_PREFIX) -> authHeader.substring(BEARER_PREFIX.length)
+            else -> {
+                request.setAttribute("exception", ErrorCode.UNAUTHORIZED.code)
+                null
+            }
+        }
     }
 }

@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.web.access.AccessDeniedHandler
+import real.world.springbootkt.global.common.BaseResponse
 import real.world.springbootkt.global.common.ErrorCode
 
 class CustomAccessDeniedHandler(private val objectMapper: ObjectMapper) : AccessDeniedHandler {
@@ -18,7 +19,7 @@ class CustomAccessDeniedHandler(private val objectMapper: ObjectMapper) : Access
             this.contentType = "application/json;charset=UTF-8"
             this.status = forbidden.httpCode
         }
-        val json = objectMapper.writeValueAsString(forbidden)
+        val json = objectMapper.writeValueAsString(BaseResponse(forbidden, forbidden.message))
         response.writer.print(json)
     }
 }

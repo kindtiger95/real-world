@@ -32,9 +32,9 @@ class SecurityConfig(
             this.authenticationManagerBuilder.getOrBuild()
         )
         return http.authorizeHttpRequests {
-                it.requestMatchers("/user/**")
+                it.requestMatchers("/api/user/**")
                     .hasAuthority(securityProperties.jwtRole)
-                    .requestMatchers("/profiles/{username}/**")
+                    .requestMatchers("/api/profiles/{username}/**")
                     .hasAuthority(securityProperties.jwtRole)
                     .anyRequest()
                     .permitAll()

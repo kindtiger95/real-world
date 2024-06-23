@@ -1,12 +1,11 @@
 package real.world.springbootkt.global.common
 
-import java.time.OffsetDateTime
+import com.fasterxml.jackson.annotation.JsonValue
 
 enum class ErrorCode(
     val httpCode: Int,
-    val code: String,
-    val message: String,
-    val time: OffsetDateTime = OffsetDateTime.now()
+    @JsonValue val code: String,
+    val message: String
 ) {
     BAD_REQUEST(400, "9000", "Bad request."),
     UNAUTHORIZED(401, "9001", "Unauthorized."),
