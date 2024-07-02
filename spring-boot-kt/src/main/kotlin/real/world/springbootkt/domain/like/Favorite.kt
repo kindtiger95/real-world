@@ -5,9 +5,9 @@ import real.world.springbootkt.domain.article.Article
 import real.world.springbootkt.domain.user.User
 import real.world.springbootkt.global.common.BaseEntity
 
-@Table(name = "like")
+@Table(name = "favorite")
 @Entity
-class Like : BaseEntity() {
+class Favorite : BaseEntity() {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     var user: User? = null

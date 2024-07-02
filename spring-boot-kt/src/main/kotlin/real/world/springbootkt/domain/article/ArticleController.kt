@@ -12,9 +12,9 @@ class ArticleController(private val articleService: ArticleService) {
     fun getArticles(
         @RequestParam(name = "tag") tag: String? = null,
         @RequestParam(name = "author") author: String? = null,
-        @RequestParam(name = "favorited", defaultValue = "false") favorited: Boolean = false,
+        @RequestParam(name = "favorited") favorited: String? = null,
         @RequestParam(name = "limit", defaultValue = "20") limit: Long,
         @RequestParam(name = "offset", defaultValue = "0") offset: Long
-    ): List<ArticleResources.Article> =
+    ): List<ArticleResources.Response.ArticleItem> =
         articleService.getArticles(tag, author, favorited, limit, offset)
 }

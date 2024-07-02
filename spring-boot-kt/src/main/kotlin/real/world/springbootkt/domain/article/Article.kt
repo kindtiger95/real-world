@@ -2,7 +2,7 @@ package real.world.springbootkt.domain.article
 
 import jakarta.persistence.*
 import real.world.springbootkt.domain.comment.Comment
-import real.world.springbootkt.domain.like.Like
+import real.world.springbootkt.domain.like.Favorite
 import real.world.springbootkt.domain.tag.ArticleTag
 import real.world.springbootkt.domain.user.User
 import real.world.springbootkt.global.common.BaseEntity
@@ -10,8 +10,7 @@ import real.world.springbootkt.global.common.BaseEntity
 @Table(name = "article")
 @Entity
 class Article(
-    title: String,
-    val username: String
+    title: String
 ) : BaseEntity() {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -21,10 +20,10 @@ class Article(
     lateinit var comments: List<Comment>
 
     @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    lateinit var articleTag: List<ArticleTag>
+    lateinit var articleTags: List<ArticleTag>
 
     @OneToMany(mappedBy = "article", fetch = FetchType.LAZY)
-    lateinit var like: List<Like>
+    lateinit var favorites: List<Favorite>
 
     @Column(nullable = false)
     var title: String = title
@@ -36,7 +35,10 @@ class Article(
     @Column(nullable = false)
     lateinit var slug: String
 
-    var description: String? = null
+    lateinit var description: String
 
-    var body: String? = null
+    lateinit var body: String
+
+    @Column(nullable = false)
+    lateinit var username: String
 }

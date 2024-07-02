@@ -4,9 +4,8 @@ interface ArticleQuerydslRepository {
     fun findAllByTagAndAuthorAndFavorited(
         tag: String?,
         author: String?,
-        favorited: Boolean,
+        favorited: String?,
         limit: Long,
-        offset: Long,
-        userId: Long?
+        offset: Long
     ): List<Article>
 }
