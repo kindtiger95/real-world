@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
+import real.world.springbootkt.domain.article.Article
 import real.world.springbootkt.domain.follow.Follow
 import real.world.springbootkt.domain.follow.FollowRepository
 import real.world.springbootkt.domain.user.UserRepository
@@ -13,10 +14,10 @@ import real.world.springbootkt.domain.user.UserService
 class ProfileService(
     private val userService: UserService,
     private val followRepository: FollowRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
     @Transactional(readOnly = true)
-    fun getProfileByUsername(username: String): ProfileResource.Response {
+    fun getProfileByUsername(username: String): ProfileResource.Response.ProfileItem {
         val currentUser = this.userService.getCurrentUser() ?: throw ResponseStatusException(
             HttpStatus.BAD_REQUEST,
             "can't find user."
@@ -27,11 +28,24 @@ class ProfileService(
         )
         val following =
             followRepository.findByFollowerIdAndFolloweeId(targetUser.id, currentUser.id)?.let { true } ?: false
-        return ProfileResource.Response.from(targetUser, following)
+        return ProfileResource.Response.ProfileItem.from(targetUser, following)
+    }
+
+    @Transactional(readOnly = true)
+    fun getProfileMapByArticleId(articles: List<Article>): Map<Long, ProfileResource.Response.ProfileItem> {
+        val currentUser = userService.getCurrentUser()
+        val followMapByFollowerId = if (currentUser != null) {
+            followRepository.findByFollowerIdInAndFolloweeId(articles.map { it.user.id }, currentUser.id)
+                .associateBy { it.follower.id }
+        } else emptyMap()
+        return articles.associate {
+            val follow = followMapByFollowerId[it.user.id] != null
+            it.id to ProfileResource.Response.ProfileItem.from(it.user, follow)
+        }
     }
 
     @Transactional
-    fun follow(username: String): ProfileResource.Response {
+    fun follow(username: String): ProfileResource.Response.ProfileItem {
         val currentUser = this.userService.getCurrentUser() ?: throw ResponseStatusException(
             HttpStatus.BAD_REQUEST,
             "can't find user."
@@ -47,11 +61,11 @@ class ProfileService(
             this.follower = targetUser
             this.followee = currentUser
         })
-        return ProfileResource.Response.from(targetUser, true)
+        return ProfileResource.Response.ProfileItem.from(targetUser, true)
     }
 
     @Transactional
-    fun unfollow(username: String): ProfileResource.Response {
+    fun unfollow(username: String): ProfileResource.Response.ProfileItem {
         val currentUser = this.userService.getCurrentUser() ?: throw ResponseStatusException(
             HttpStatus.BAD_REQUEST,
             "can't find user."
@@ -65,6 +79,6 @@ class ProfileService(
             "already done request."
         )
         followRepository.delete(follow)
-        return ProfileResource.Response.from(targetUser, false)
+        return ProfileResource.Response.ProfileItem.from(targetUser, false)
     }
 }

@@ -27,11 +27,11 @@ class UserResources {
         @JsonTypeName("user")
         @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
         data class Request(
-            val email: String,
-            val bio: String,
-            val image: String,
-            val username: String,
-            val password: String
+            val email: String?,
+            val bio: String?,
+            val image: String?,
+            val username: String?,
+            val password: String?
         )
     }
 

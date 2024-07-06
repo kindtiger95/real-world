@@ -16,8 +16,6 @@ class UserService(
     private val userRepository: UserRepository,
     private val jwtUtility: JwtUtility
 ) {
-    private val logger = LoggerFactory.getLogger(this::class.java.name)
-
     @Transactional
     fun register(request: UserResources.Register.Request): UserResources.User {
         userRepository.findByEmail(request.email)?.let {
@@ -49,11 +47,11 @@ class UserService(
     @Transactional
     fun update(request: UserResources.Update.Request): UserResources.User {
         val user = this.getCurrentUser()?.apply {
-            this.username = request.username
-            this.email = request.email
-            this.bio = request.bio
-            this.image = request.image
-            this.password = request.password
+            if (request.username != null) this.username = request.username
+            if (request.email != null) this.email = request.email
+            if (request.bio != null) this.bio = request.bio
+            if (request.image != null) this.image = request.image
+            if (request.password != null) this.password = request.password
         } ?: throw ResponseStatusException(
             HttpStatus.BAD_REQUEST,
             "can't find user."
@@ -63,7 +61,10 @@ class UserService(
 
     fun getCurrentUser(): User? {
         val authentication = SecurityContextHolder.getContext().authentication as? JwtAuthenticationToken
-            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "no auth info.")
+            ?: return null
+        if (authentication.isUserInitialized()) {
+            return authentication.user
+        }
         val claims: Claims = authentication.getPrincipal()
         val userId = (claims["userId"] as? Int)?.toLong() ?: throw ResponseStatusException(
             HttpStatus.UNAUTHORIZED,
@@ -77,6 +78,7 @@ class UserService(
         if (user.username != userName) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "can't match username.")
         }
+        authentication.user = user
         return user
     }
 }
