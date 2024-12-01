@@ -5,7 +5,8 @@ import real.world.springbootkt.global.common.BaseEntity
 
 @Table(name = "tag")
 @Entity
-class Tag(val tag: String) : BaseEntity() {
+class Tag : BaseEntity() {
     @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     lateinit var articleTag: List<ArticleTag>
+    lateinit var tag: String
 }

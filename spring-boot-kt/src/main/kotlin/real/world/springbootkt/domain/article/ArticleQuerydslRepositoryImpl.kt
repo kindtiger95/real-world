@@ -3,12 +3,11 @@ package real.world.springbootkt.domain.article
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
 import real.world.springbootkt.domain.article.QArticle.article
-import real.world.springbootkt.domain.like.QFavorite.favorite
+import real.world.springbootkt.domain.favorite.QFavorite.favorite
 import real.world.springbootkt.domain.tag.QArticleTag.articleTag
 import real.world.springbootkt.domain.tag.QTag.tag1
 import real.world.springbootkt.domain.user.QUser.user
 
-@Repository
 class ArticleQuerydslRepositoryImpl(private val jpaQueryFactory: JPAQueryFactory): ArticleQuerydslRepository {
     override fun findAllByTagAndAuthorAndFavorited(
         tag: String?,
@@ -29,8 +28,8 @@ class ArticleQuerydslRepositoryImpl(private val jpaQueryFactory: JPAQueryFactory
                 .join(favorite.user, user)
                 .where(user.username.eq(favorited))
         }
-        return selectFrom.offset(offset)
-            .orderBy(article.createdAt.desc())
+        return selectFrom.orderBy(article.createdAt.desc())
+            .offset(offset)
             .limit(limit)
             .fetch()
     }

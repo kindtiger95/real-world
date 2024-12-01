@@ -18,12 +18,8 @@ class JwtProvider(
 
     override fun authenticate(authentication: Authentication): Authentication {
         val token = authentication.details as String
-        try {
-            val claims: Claims = jwtUtility.jwtParse(token)
-            return JwtAuthenticationToken(claims, token, this.createGrantedAuthorities(claims))
-        } catch (jwtException: JwtException) {
-            throw JwtException("토큰 유효하지 않음")
-        }
+        val claims: Claims = jwtUtility.jwtParse(token)
+        return JwtAuthenticationToken(claims, token, this.createGrantedAuthorities(claims))
     }
 
     override fun supports(authentication: Class<*>): Boolean {

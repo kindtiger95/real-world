@@ -1,4 +1,6 @@
 package real.world.springbootkt.domain.tag
 
-interface ArticleTagRepository {
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface ArticleTagRepository : JpaRepository<ArticleTag, Long> {
 }

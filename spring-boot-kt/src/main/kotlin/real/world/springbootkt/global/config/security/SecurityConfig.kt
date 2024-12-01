@@ -34,8 +34,6 @@ class SecurityConfig(
         return http.authorizeHttpRequests {
                 it.requestMatchers("/api/user/**")
                     .hasAuthority(securityProperties.jwtRole)
-                    .requestMatchers("/api/profiles/{username}/**")
-                    .hasAuthority(securityProperties.jwtRole)
                     .anyRequest()
                     .permitAll()
             }

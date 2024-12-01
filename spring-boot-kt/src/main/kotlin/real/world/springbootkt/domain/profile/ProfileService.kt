@@ -18,16 +18,16 @@ class ProfileService(
 ) {
     @Transactional(readOnly = true)
     fun getProfileByUsername(username: String): ProfileResource.Response.ProfileItem {
-        val currentUser = this.userService.getCurrentUser() ?: throw ResponseStatusException(
-            HttpStatus.BAD_REQUEST,
-            "can't find user."
-        )
+        val currentUser = this.userService.getCurrentUser()
         val targetUser = this.userRepository.findByUsername(username) ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND,
             "not found target user."
         )
-        val following =
+        val following = if (currentUser != null) {
             followRepository.findByFollowerIdAndFolloweeId(targetUser.id, currentUser.id)?.let { true } ?: false
+        } else {
+            false
+        }
         return ProfileResource.Response.ProfileItem.from(targetUser, following)
     }
 
