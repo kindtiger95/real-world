@@ -1,11 +1,11 @@
 package real.world.springbootkt.domain.user
 
 import io.jsonwebtoken.Claims
-import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
 import real.world.springbootkt.global.config.security.JwtAuthenticationToken
@@ -25,6 +25,7 @@ class UserService(
         return UserResources.User.from(user, jwtUtility.jwtSign(user.id, user.username))
     }
 
+    @Transactional(readOnly = true)
     fun login(request: UserResources.Login.Request): UserResources.User {
         val user = userRepository.findByEmail(request.email) ?: throw ResponseStatusException(
             HttpStatus.UNAUTHORIZED,
@@ -36,6 +37,7 @@ class UserService(
         return UserResources.User.from(user, jwtUtility.jwtSign(user.id, user.username))
     }
 
+    @Transactional(readOnly = true)
     fun me(): UserResources.User {
         val user = this.getCurrentUser() ?: throw ResponseStatusException(
             HttpStatus.BAD_REQUEST,
@@ -46,19 +48,21 @@ class UserService(
 
     @Transactional
     fun update(request: UserResources.Update.Request): UserResources.User {
-        val user = this.getCurrentUser()?.apply {
-            if (request.username != null) this.username = request.username
-            if (request.email != null) this.email = request.email
-            if (request.bio != null) this.bio = request.bio
-            if (request.image != null) this.image = request.image
-            if (request.password != null) this.password = request.password
-        } ?: throw ResponseStatusException(
+        val user = this.getCurrentUser() ?: throw ResponseStatusException(
             HttpStatus.BAD_REQUEST,
             "can't find user."
+        )
+        user.updateInfo(
+            username = request.username,
+            email = request.email,
+            bio = request.bio,
+            image = request.image,
+            password = request.password
         )
         return UserResources.User.from(user, jwtUtility.jwtSign(user.id, user.username))
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     fun getCurrentUser(): User? {
         val authentication = SecurityContextHolder.getContext().authentication as? JwtAuthenticationToken
             ?: return null

@@ -37,21 +37,21 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
-// 쿼리DSL Q파일 경로 설정
-kotlin.sourceSets.main {
-	kotlin.srcDir("${layout.buildDirectory}/generated/source/kapt/main")
-}
-
 allOpen {
-	annotation("javax.persistence.Entity")
-	annotation("javax.persistence.MappedSuperclass")
-	annotation("javax.persistence.Embeddable")
+	annotation("jakarta.persistence.Entity")
+	annotation("jakarta.persistence.MappedSuperclass")
+	annotation("jakarta.persistence.Embeddable")
 }
 
 noArg {
-	annotation("javax.persistence.Entity")
-	annotation("javax.persistence.MappedSuperclass")
-	annotation("javax.persistence.Embeddable")
+	annotation("jakarta.persistence.Entity")
+	annotation("jakarta.persistence.MappedSuperclass")
+	annotation("jakarta.persistence.Embeddable")
+}
+
+// 쿼리DSL Q파일 경로 설정
+kotlin.sourceSets.main {
+	kotlin.srcDir("${layout.buildDirectory}/generated/source/kapt/main")
 }
 
 tasks.withType<KotlinCompile> {

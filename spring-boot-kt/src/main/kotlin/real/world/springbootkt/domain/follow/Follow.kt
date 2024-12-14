@@ -6,7 +6,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import real.world.springbootkt.domain.user.User
-import real.world.springbootkt.global.common.BaseEntity
+import real.world.springbootkt.domain.common.BaseEntity
 
 @Table(name = "follow")
 @Entity

@@ -3,13 +3,13 @@ package real.world.springbootkt.domain.article
 import jakarta.persistence.*
 import real.world.springbootkt.domain.comment.Comment
 import real.world.springbootkt.domain.favorite.Favorite
-import real.world.springbootkt.domain.tag.ArticleTag
+import real.world.springbootkt.domain.article_tag.ArticleTag
 import real.world.springbootkt.domain.user.User
-import real.world.springbootkt.global.common.BaseEntity
+import real.world.springbootkt.domain.common.BaseEntity
 
 @Table(name = "article")
 @Entity
-class Article: BaseEntity() {
+class Article : BaseEntity() {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
     lateinit var user: User
@@ -24,10 +24,15 @@ class Article: BaseEntity() {
     val favorites: MutableList<Favorite> = mutableListOf()
 
     @Column(nullable = false)
-    lateinit var title: String
+    var title: String = ""
+        set(value) {
+            field = value
+            this.slug = value.lowercase().replace(" ", "-")
+        }
 
     @Column(nullable = false)
-    lateinit var slug: String
+    var slug: String = ""
+        protected set
 
     lateinit var description: String
 
@@ -35,8 +40,4 @@ class Article: BaseEntity() {
 
     @Column(nullable = false)
     lateinit var username: String
-
-    fun setSlug() {
-        this.slug = title.lowercase().replace(" ", "-")
-    }
 }

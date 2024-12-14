@@ -37,7 +37,7 @@ class ArticleResources {
                         slug = article.slug,
                         description = article.description,
                         body = article.body,
-                        tagList = article.articleTags.map { it.tag.tag },
+                        tagList = article.articleTags.map { it.tag.tagName },
                         createdAt = article.createdAt,
                         updatedAt = article.updatedAt,
                         favorited = favorited,

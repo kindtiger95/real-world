@@ -1,11 +1,10 @@
 package real.world.springbootkt.domain.article
 
 import com.querydsl.jpa.impl.JPAQueryFactory
-import org.springframework.stereotype.Repository
 import real.world.springbootkt.domain.article.QArticle.article
+import real.world.springbootkt.domain.article_tag.QArticleTag.articleTag
 import real.world.springbootkt.domain.favorite.QFavorite.favorite
-import real.world.springbootkt.domain.tag.QArticleTag.articleTag
-import real.world.springbootkt.domain.tag.QTag.tag1
+import real.world.springbootkt.domain.tag.QTag
 import real.world.springbootkt.domain.user.QUser.user
 
 class ArticleQuerydslRepositoryImpl(private val jpaQueryFactory: JPAQueryFactory): ArticleQuerydslRepository {
@@ -19,8 +18,8 @@ class ArticleQuerydslRepositoryImpl(private val jpaQueryFactory: JPAQueryFactory
         var selectFrom = jpaQueryFactory.selectFrom(article)
         if (tag != null) {
             selectFrom = selectFrom.join(article.articleTags, articleTag)
-                .join(articleTag.tag, tag1)
-                .where(tag1.tag.eq(tag))
+                .join(articleTag.tag, QTag.tag)
+                .where(QTag.tag.tagName.eq(tag))
         } else if (author != null) {
             selectFrom = selectFrom.where(article.username.eq(author))
         } else if (favorited != null) {

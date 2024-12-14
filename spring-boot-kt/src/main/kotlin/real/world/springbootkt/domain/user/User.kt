@@ -3,7 +3,7 @@ package real.world.springbootkt.domain.user
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
-import real.world.springbootkt.global.common.BaseEntity
+import real.world.springbootkt.domain.common.BaseEntity
 
 @Table(name = "user")
 @Entity
@@ -17,4 +17,12 @@ class User(
 ) : BaseEntity() {
     var bio: String? = null
     var image: String? = null
+
+    fun updateInfo(username: String?, email: String?, bio: String?, image: String?, password: String?) {
+        if (username != null) this.username = username
+        if (email != null) this.email = email
+        if (bio != null) this.bio = bio
+        if (image != null) this.image = image
+        if (password != null) this.password = password
+    }
 }

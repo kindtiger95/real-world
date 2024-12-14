@@ -1,4 +1,4 @@
-package real.world.springbootkt.global.common
+package real.world.springbootkt.domain.common
 
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate

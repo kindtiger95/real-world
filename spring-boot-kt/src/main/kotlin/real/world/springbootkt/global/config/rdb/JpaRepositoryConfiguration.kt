@@ -8,17 +8,22 @@ import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.JpaVendorAdapter
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
 import org.springframework.transaction.PlatformTransactionManager
+import real.world.springbootkt.domain.JpaEntityMarker
 import javax.sql.DataSource
 
 @Configuration
+@EnableJpaRepositories(
+    basePackageClasses = [JpaEntityMarker::class]
+)
 class JpaRepositoryConfiguration @Autowired constructor(
     @Qualifier("masterDataSource") val masterDataSource: DataSource,
-    @Qualifier("slaveDataSource") val slaveDataSource: DataSource,
+//    @Qualifier("slaveDataSource") val slaveDataSource: DataSource,
     val jpaProperties: JpaProperties
 ) {
 
@@ -28,16 +33,17 @@ class JpaRepositoryConfiguration @Autowired constructor(
         return EntityManagerFactoryBuilder(createJpaVendorAdapter(), jpaProperties.properties, null)
             .dataSource(masterDataSource)
             .properties(jpaProperties.properties)
-            .build().apply { this.setPackagesToScan("real.world.springbootkt") }
+            .packages(JpaEntityMarker::class.java)
+            .build()
     }
 
-    @Bean
-    fun slaveEntityManagerFactory(): LocalContainerEntityManagerFactoryBean {
-        return EntityManagerFactoryBuilder(createJpaVendorAdapter(), jpaProperties.properties, null)
-            .dataSource(slaveDataSource)
-            .properties(jpaProperties.properties)
-            .build().apply { this.setPackagesToScan("real.world.springbootkt") }
-    }
+//    @Bean
+//    fun slaveEntityManagerFactory(): LocalContainerEntityManagerFactoryBean {
+//        return EntityManagerFactoryBuilder(createJpaVendorAdapter(), jpaProperties.properties, null)
+//            .dataSource(slaveDataSource)
+//            .properties(jpaProperties.properties)
+//            .build().apply { this.setPackagesToScan("real.world.springbootkt") }
+//    }
 
     @Bean
     @Primary
@@ -47,12 +53,12 @@ class JpaRepositoryConfiguration @Autowired constructor(
         return JpaTransactionManager(entityManagerFactory)
     }
 
-    @Bean
-    fun slaveTransactionManager(
-        @Qualifier("slaveEntityManagerFactory") entityManagerFactory: EntityManagerFactory
-    ): PlatformTransactionManager {
-        return JpaTransactionManager(entityManagerFactory)
-    }
+//    @Bean
+//    fun slaveTransactionManager(
+//        @Qualifier("slaveEntityManagerFactory") entityManagerFactory: EntityManagerFactory
+//    ): PlatformTransactionManager {
+//        return JpaTransactionManager(entityManagerFactory)
+//    }
 
     private fun createJpaVendorAdapter(): JpaVendorAdapter {
         val adapter = HibernateJpaVendorAdapter()

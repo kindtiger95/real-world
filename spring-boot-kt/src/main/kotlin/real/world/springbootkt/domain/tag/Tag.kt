@@ -1,12 +1,14 @@
 package real.world.springbootkt.domain.tag
 
 import jakarta.persistence.*
-import real.world.springbootkt.global.common.BaseEntity
+import real.world.springbootkt.domain.article_tag.ArticleTag
+import real.world.springbootkt.domain.common.BaseEntity
 
 @Table(name = "tag")
 @Entity
-class Tag : BaseEntity() {
+class Tag(
+    val tagName: String
+) : BaseEntity() {
     @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    lateinit var articleTag: List<ArticleTag>
-    lateinit var tag: String
+    val articleTags: MutableList<ArticleTag> = mutableListOf()
 }

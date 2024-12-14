@@ -15,15 +15,15 @@ class CustomDataSourceConfiguration {
     @ConfigurationProperties(prefix = "database.master")
     fun masterHikariConfig(): HikariConfig = HikariConfig()
 
-    @Bean
-    @ConfigurationProperties(prefix = "database.slave")
-    fun slaveHikariConfig(): HikariConfig = HikariConfig()
+//    @Bean
+//    @ConfigurationProperties(prefix = "database.slave")
+//    fun slaveHikariConfig(): HikariConfig = HikariConfig()
 
     @Bean
     fun masterDataSource(@Qualifier("masterHikariConfig") masterHikariConfig: HikariConfig) =
         HikariDataSource(masterHikariConfig)
 
-    @Bean
-    fun slaveDataSource(@Qualifier("slaveHikariConfig") slaveHikariConfig: HikariConfig) =
-        HikariDataSource(slaveHikariConfig)
+//    @Bean
+//    fun slaveDataSource(@Qualifier("slaveHikariConfig") slaveHikariConfig: HikariConfig) =
+//        HikariDataSource(slaveHikariConfig)
 }

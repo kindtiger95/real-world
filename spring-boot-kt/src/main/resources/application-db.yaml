@@ -8,9 +8,21 @@ spring:
         format_sql: true
         globally_quoted_identifiers: true
         default_batch_fetch_size: 200
-        dialect: org.hibernate.dialect.MySQLDialect
         hbm2ddl:
           auto: none
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+logging:
+  level:
+    org:
+      springframework:
+        transaction.interceptor: trace
+        orm:
+          jpa: DEBUG
+      hibernate:
+        orm:
+          jdbc.bind: TRACE
+
 ---
 spring.config.activate.on-profile:
   - default
@@ -19,8 +31,12 @@ database:
   master:
     minimumIdle: 10
     maximumPoolSize: 30
+    driverClassName: com.mysql.cj.jdbc.Driver
+    auto-commit: false
 
   slave:
     minimumIdle: 10
     maximumPoolSize: 30
+    driverClassName: com.mysql.cj.jdbc.Driver
+    auto-commit: false
     read-only: true
